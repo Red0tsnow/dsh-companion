@@ -41,13 +41,16 @@ user-provided external CLI; no Heybox signing implementation is included.
 
 The setup wizard may download Minecraft server components from Mojang, portable
 Eclipse Temurin Java from Adoptium or the version-required Mojang Java runtime,
-and the NapCat Windows installer from the
+and the NapCat Windows portable archive from the
 official NapNeko GitHub release, only after explicit user confirmation. These
 files remain separate user-managed runtime data and retain upstream terms.
 The user accepts the Minecraft EULA and completes account login themselves.
-NapCat automatic execution requires a packaged version/hash anchor, a valid
-Authenticode signature with a verified publisher, and explicit confirmation.
-The currently reviewed unsigned installer is manual-install only.
+NapCat execution requires a packaged version/hash anchor and explicit confirmation.
+Only the reviewed portable Node entry point is run; installers and elevation
+helpers are never executed. An owned process-local bridge directs the native
+QQ data accessor to the character's dedicated profile without native setters.
+Paper/SkinsRestorer artifacts remain gated until client-visible acceptance.
+
 
 DSH, Minecraft, QQ, NapCat, Bilibili, and Heybox are names of their respective
 projects or services. This package does not imply their endorsement.

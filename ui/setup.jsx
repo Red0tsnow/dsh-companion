@@ -12,6 +12,7 @@ const copy={
     'discovering-lan':'正在查找局域网世界（最多 4 秒）…','checking-existing':'正在逐项检查已有服务端…','server-only-ready':'世界已开启；该版本身体暂不支持。',
     manual:'请自行安装 NapCat，然后在下方高级设置填写连接地址。',manualLink:'打开 NapCat 手动安装说明',trust:'安装助手版本 / SHA-256 前 8 位',
     portableConsent:'将运行 NapCat 便携版（非官方 QQ 客户端）',portablePrepare:'准备并启动 QQ 连接',portableScan:'只需用角色 QQ 扫码，并在手机上确认登录。插件会自动检查连接。',portableQr:'QQ 登录二维码',
+    resumeQQ:'重新启动 QQ 连接','reconnect-required':'连接助手已停止。确认下方版本后，可重新启动；已有登录态会保留。',paperPending:'Paper 自定义皮肤待完成实机验收，暂不可选。已有世界会保留。',vanillaFallback:'改用原版重新准备',
     'extracting-portable':'正在解压并校验 NapCat 便携版…','starting-portable':'正在启动便携版并获取登录二维码…',
     unsigned:'当前安装助手没有可验证的发布者签名，已关闭自动执行。请按手动说明安装。',execution:'我已核对显示的版本号与哈希，确认执行', 'manual-required':'自动安装已停止，请按手动说明继续。',
     consent:'允许从官方来源下载所需组件',eula:'我已阅读并同意 Minecraft 使用协议',prepare:'准备并开启世界',
@@ -44,6 +45,7 @@ const copy={
     'discovering-lan':'Discovering LAN worlds (up to 4 seconds)…','checking-existing':'Checking the existing server…','server-only-ready':'World is open; this version cannot host the character yet.',
     manual:'Install NapCat yourself, then enter its connection address in advanced settings below.',manualLink:'NapCat manual installation guide',trust:'Installer version / first 8 SHA-256 characters',
     portableConsent:'Run NapCat portable (an unofficial QQ client)',portablePrepare:'Prepare and start QQ connection',portableScan:'Scan using the character QQ and confirm on your phone. The connection is checked automatically.',portableQr:'QQ login QR code',
+    resumeQQ:'Restart QQ connection','reconnect-required':'The portable helper stopped. Confirm the version below to restart it. Saved login data is retained.',paperPending:'Paper skins are awaiting in-game acceptance and are unavailable. Existing worlds are retained.',vanillaFallback:'Prepare with vanilla instead',
     'extracting-portable':'Extracting and verifying NapCat portable…','starting-portable':'Starting portable runtime and requesting a login code…',
     unsigned:'This installer has no verified publisher signature. Automatic execution is disabled. Please use the manual guide.',execution:'I checked the displayed version and hash and confirm execution','manual-required':'Automatic installation stopped. Please follow the manual guide.',
     consent:'Allow required components to download from official sources',eula:'I have read and accept the Minecraft usage agreement',prepare:'Prepare and open world',
@@ -73,7 +75,7 @@ export function SetupFlow({id,lang,request,onComplete,ownerId='',selfId='',onlin
   const [state,setState]=useState(null),[login,setLogin]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
   const [qqLogin,setQqLogin]=useState(null);
   const [source,setSource]=useState('managed'),[catalog,setCatalog]=useState(null),[version,setVersion]=useState(''),[serverOnly,setServerOnly]=useState(false),[directory,setDirectory]=useState(''),[javaPath,setJavaPath]=useState(''),[trust,setTrust]=useState(null),[execution,setExecution]=useState(false);
-  const [serverType,setServerType]=useState('vanilla'),[skinUrl,setSkinUrl]=useState(''),[skinResult,setSkinResult]=useState(null);
+  const [serverType,setServerType]=useState('vanilla');
   const completed=useRef(null),mounted=useRef(true),completeRef=useRef(onComplete);completeRef.current=onComplete;
   useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
   useEffect(()=>{if(!open){setOwner(ownerId);setSelf(selfId);}},[ownerId,selfId,open]);
@@ -106,7 +108,8 @@ export function SetupFlow({id,lang,request,onComplete,ownerId='',selfId='',onlin
           <label className="field"><span>{t.version}</span><select aria-label={t.version} value={version} onChange={e=>{setVersion(e.target.value);setServerOnly(false);}} disabled={!catalog||busy||state?.running}>
             {!catalog&&<option value="">{t.versionsLoading}</option>}{['supported','server-only','unavailable'].map(group=><optgroup key={group} label={t[group==='server-only'?'serverOnly':group]}>{catalog?.versions.filter(v=>v.state===group).map(v=><option key={v.id} value={v.id} disabled={group==='unavailable'}>{v.id}</option>)}</optgroup>)}
           </select></label><p className="dsc-note">{t.mcVersion}</p>
-          <label className="field"><span>{t.serverType}</span><select aria-label={t.serverType} value={serverType} onChange={e=>setServerType(e.target.value)} disabled={busy||state?.running}><option value="vanilla">{t.vanilla}</option><option value="paper">{t.paper}</option></select></label>
+          <label className="field"><span>{t.serverType}</span><select aria-label={t.serverType} value={serverType} onChange={e=>setServerType(e.target.value)} disabled={busy||state?.running}><option value="vanilla">{t.vanilla}</option><option value="paper" disabled={catalog?.paper?.available!==true||!catalog.paper.versions.includes(version)}>{t.paper}</option></select></label>
+          {catalog?.paper?.available!==true&&<p className="dsc-note">{t.paperPending}</p>}
           {catalog?.versions.find(v=>v.id===version)?.state==='server-only'&&<label className="dsc-check"><input type="checkbox" checked={serverOnly} onChange={e=>setServerOnly(e.target.checked)}/>{t.serverOnlyConfirm}</label>}
         </>}
         {source==='lan'&&<><p className="dsc-note">{t.lanHelp}</p><p className="dsc-warning">{t.modWarning}</p></>}
@@ -120,19 +123,13 @@ export function SetupFlow({id,lang,request,onComplete,ownerId='',selfId='',onlin
         </>}
         {state?.checks&&<ul className="dsc-checks">{state.checks.map((check,i)=><li key={i} data-ok={check.ok}>{check.ok?'✓':'✕'} {friendly(check.message,lang)}</li>)}</ul>}
         {['complete','server-only-ready'].includes(state?.phase)&&state.address&&<div className="dsc-join"><p>{t.address}</p><strong>{state.address}</strong><button className="small" onClick={()=>perform(async()=>{await navigator.clipboard.writeText(state.address);setNotice(t.copied);})}>{t.copy}</button></div>}
-        {serverType==='paper'&&['complete','server-only-ready'].includes(state?.phase)&&<div className="dsc-skin">
-          <h5>{t.skin}</h5>
-          <label className="field"><span>{t.skinUrl}</span><input value={skinUrl} onChange={e=>{setSkinUrl(e.target.value);setSkinResult(null);}} placeholder="https://…png" inputMode="url" autoComplete="off"/></label>
-          <button className="small" disabled={busy||!skinUrl.trim()} onClick={()=>perform(async()=>setSkinResult(await request('/setup/skin',{url:skinUrl.trim()})))}>{t.skinApply}</button>
-          <p className="dsc-note">{t.skinNote}</p>
-          {skinResult?.ok&&<p className="dsc-message">{t.skinDone}</p>}
-          {skinResult&&!skinResult.ok&&<p className="dsc-warning">{(skinResult.reply||[]).slice(-2).join(' ')}</p>}
-        </div>}
+        {(world.serverType==='paper'||(source==='managed'&&state?.phase==='error'))&&<><p className="dsc-note">{t.paperPending}</p><button disabled={busy||state?.running||!consent||!eula||!version} onClick={()=>perform(async()=>{setServerType('vanilla');setState(await request('/setup/mc',{source:'managed',version,serverType:'vanilla',downloadConsent:consent,eulaAccepted:eula,acknowledgeServerOnly:serverOnly}));})}>{t.vanillaFallback}</button></>}
       </>}
       {id==='qq'&&<>
         {trust&&<p className="dsc-trust">{t.trust}<br/><strong>{trust.version} · {trust.hashPrefix}</strong></p>}
         {(trust?.automaticExecution===false||state?.phase==='manual-required'||error)&&<div className="dsc-manual"><p>{trust?.automaticExecution===false?t.unsigned:t.manual}</p><a href={trust?.manualUrl||'https://napneko.github.io/guide/boot/Shell'} target="_blank" rel="noreferrer">{t.manualLink}</a></div>}
-        {trust?.automaticExecution===true&&!error&&!state?.running&&!['helper-ready','install-helper','waiting-login','complete','manual-required'].includes(state?.phase)&&<>
+        {trust?.mode==='portable'&&!online&&!state?.running&&['reconnect-required','complete','waiting-login'].includes(state?.phase)&&<><label className="dsc-check"><input type="checkbox" checked={execution} onChange={e=>setExecution(e.target.checked)}/>{t.portableConsent}</label><button disabled={busy||!execution} onClick={()=>perform(async()=>{setQqLogin(null);setState(await request('/setup/qq/launch',{confirmExecution:execution,version:trust.version,sha256:trust.sha256}));})}>{t.resumeQQ}</button></>}
+        {trust?.automaticExecution===true&&!error&&!state?.running&&!['helper-ready','install-helper','waiting-login','complete','manual-required','reconnect-required'].includes(state?.phase)&&<>
           <label className="field"><span>{t.owner}</span><input inputMode="numeric" value={owner} onChange={e=>setOwner(e.target.value)} autoComplete="off"/></label>
           <label className="field"><span>{t.self}</span><input inputMode="numeric" value={self} onChange={e=>setSelf(e.target.value)} autoComplete="off"/></label>
           <p className="dsc-note">{t.different}</p>

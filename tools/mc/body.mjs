@@ -7,7 +7,10 @@ import { startBody, bodyStatus, bodyRequest, delay, withWorldLock } from '../../
 const body = path.join(P.mc, 'mc-daemon.mjs'), next = path.join(P.mc, 'mc-daemon-next.mjs'), backups = path.join(P.mc, 'body-backups');
 const cmd = process.argv[2];
 await fs.mkdir(backups, { recursive: true });
-const check = async file => exec(await resolveNode(CONFIG.runtime.nodePath), ['--check', file], { timeout: 10000, windowsHide: true });
+const check = async file => {
+  const node=await resolveNode(CONFIG.runtime.nodePath);
+  return exec(node.file, ['--check', file], { timeout: 10000, windowsHide: true,env:{...process.env,...node.env} });
+};
 const stop = async port => { if (await bodyStatus(ROOT, CONFIG.mc, port)) { await bodyRequest(ROOT, CONFIG.mc, '/shutdown', {}, port); await delay(600); } };
 async function trial() {
   await check(next);

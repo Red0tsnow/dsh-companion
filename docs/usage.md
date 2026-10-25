@@ -11,11 +11,11 @@
 | Java | 本地 Minecraft 服务端 | 按所选版本检测或准备对应运行环境；26.1 要求 Java 25，1.21.8 使用 Java 21；高级配置可指定路径 |
 | Minecraft jar | 开世界 | 向导确认下载与协议后从 Minecraft 官方准备；高级配置可使用已有服务端 |
 | mineflayer 及配套模块 | 角色身体 | 由插件的 npm 依赖安装 |
-| NapCat 和 QQ | QQ 通道 | 当前固定助手无签名，需按手动说明安装；在高级设置接入已有部署 |
+| NapCat 和 QQ | QQ 通道 | 在向导确认固定版本与哈希后准备官方便携版，扫码由用户完成；也可在高级设置接入已有部署 |
 | Python/Pillow | 可选媒体处理 | 缺失只影响对应能力，插件不自动安装 |
 | FFmpeg | B站工具中的视频抽帧 | 用户准备并放入 PATH 或设置 `FFMPEG`；普通登录检测不需要 |
 
-向导在用户确认后可下载 Java、Minecraft 服务端与 NapCat 官方安装助手，账号登录与 Minecraft 协议由用户完成。Node、游戏客户端及可选媒体处理工具需在宿主环境可用。可用链接：[Node](https://nodejs.org/)、[Java](https://adoptium.net/)、[Minecraft 服务端](https://www.minecraft.net/download/server)、[NapCat](https://napneko.github.io/)、[Python](https://www.python.org/)、[FFmpeg](https://ffmpeg.org/)。
+向导在用户确认后可下载 Java、Minecraft 服务端与 NapCat 官方便携版，账号登录与 Minecraft 协议由用户完成。Node、游戏客户端及可选媒体处理工具需在宿主环境可用。可用链接：[Node](https://nodejs.org/)、[Java](https://adoptium.net/)、[Minecraft 服务端](https://www.minecraft.net/download/server)、[NapCat](https://napneko.github.io/)、[Python](https://www.python.org/)、[FFmpeg](https://ffmpeg.org/)。
 
 ## Minecraft
 

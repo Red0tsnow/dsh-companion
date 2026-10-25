@@ -11,6 +11,7 @@ import { initialize } from '../lib/core/initialize.js';
 import { paths } from '../lib/core/paths.js';
 import { readJson, writeJson } from '../lib/core/files.js';
 import { worldStatus, bodyStatus, bodyRequest, portOpen, processFacts, delay } from '../lib/core/world.js';
+import {VERSION} from '../lib/core/version.js';
 const exec = promisify(execFile);
 const args = process.argv.slice(2), opt = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
 const sourceJar = opt('--server-jar'), java = opt('--java'), sourceEula = opt('--eula');
@@ -29,7 +30,7 @@ await fs.writeFile(path.join(server, 'server.properties'), [
 ].join('\n') + '\n');
 await initialize(root); const store = new ConfigStore(root);
 await store.save({ runtime: { nodePath: process.execPath }, mc: { enabled: true, serverDir: server, javaPath: java, port, commandPort, testPort, username: 'CompanionTest', auth: 'offline', memoryMb: 1024 } });
-const cfg = await store.read(), p = paths(root), report = { at: new Date().toISOString(), sourceHash: originalHash, checks: [], ownedPids: [], bodyPids: [], result: 'running' };
+const cfg = await store.read(), p = paths(root), report = { packageVersion:VERSION, at: new Date().toISOString(), sourceHash: originalHash, checks: [], ownedPids: [], bodyPids: [], result: 'running' };
 const baselineProcessIds = new Set((await processFacts(port)).processes.map(x => x.pid));
 const mark = (name, detail = {}) => { report.checks.push({ name, ...detail }); console.log(JSON.stringify({ check: name, ...detail })); };
 async function world(cmd) {

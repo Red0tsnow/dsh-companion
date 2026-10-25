@@ -1,3 +1,4 @@
+import {VERSION} from '../lib/core/version.js';
 // Real vanilla server/body integration. The LAN announcement is explicitly a
 // protocol fixture; this is not evidence of an actual Minecraft client opening LAN.
 import fs from 'node:fs/promises';
@@ -12,7 +13,7 @@ import {CompanionService} from '../lib/core/service.js';
 import {bodyStatus,bodyRequest,worldStatus,portOpen,delay} from '../lib/core/world.js';
 const workspace=path.resolve('.'),root=path.resolve('.dev/030-source-verification'),a=JSON.parse(await fs.readFile('artifacts/030-world-verification.json','utf8'));
 assert.ok(a.managed.directory.startsWith(path.join(workspace,'.dev')+path.sep));
-const report={kind:'real-existing-server-and-real-body-LAN-with-synthetic-UDP-announcement',at:new Date().toISOString(),checks:[],pending:['Actual Minecraft Java Edition client Open to LAN and host exit acceptance']};
+const report={packageVersion:VERSION,kind:'real-existing-server-and-real-body-LAN-with-synthetic-UDP-announcement',at:new Date().toISOString(),checks:[],pending:['Actual Minecraft Java Edition client Open to LAN and host exit acceptance']};
 const c=new CompanionService(path.join(root,'existing')),b=new CompanionService(path.join(root,'lan'));let server,announcer,timer,browser,preview;
 const mark=name=>{report.checks.push({name,pass:true});console.log(name);};
 const hash=async file=>createHash('sha256').update(await fs.readFile(file)).digest('hex');

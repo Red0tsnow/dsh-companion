@@ -28,6 +28,13 @@ Source deployment is read-only. Never inspect dsh-onebot-qq source. No publishin
 
 ## Known environment
 
+## 0.5.1 correction
+- Preserves the published commits; no history rewrite, GitHub push or deployment switch.
+- Paper/skin is gated pending the specified client-visible 26.1 spike. Removes the independent Java launcher and timed force kill. Version pins must match the selected version; new component staging is transactional, and server types use separate directories.
+- Legacy 0.5.0 Paper folders remain intact when falling back to an independent vanilla world.
+- Portable QQ has a confirmed restart route, clears stale QR images and can recognize a valid saved login over authenticated OneBot. A process-local native loader bridge isolates the QQ data accessor without invoking native system setters.
+- Version reporting and the local manual launcher derive the package version. New acceptance evidence and actual archive verification are recorded under docs/verification-0.5.1.md and local artifacts.
+
 ## 0.3.0 revision
 - R1 pins the reviewed NapCat release; mismatched version/asset/digest is refused before download. Execution requires confirmation and Valid Authenticode with the exact publisher. The reviewed real installer is NotSigned, so the shipping UI is manual-install only.
 - R2 computes the default from the live Mojang release list and actual minecraft-data support. Real 26.1 plus the official Java 25 runtime passed start/join/observe/stop. 26.3 is clearly marked server-only.

@@ -1,3 +1,4 @@
+import {VERSION} from '../lib/core/version.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import assert from 'node:assert/strict';
@@ -6,7 +7,7 @@ import {chromium,expect} from '@playwright/test';
 import {CompanionService} from '../lib/core/service.js';
 import {bodyStatus,bodyRequest,worldStatus,portOpen,delay} from '../lib/core/world.js';
 if(!process.argv.includes('--download'))throw new Error('Pass --download to prepare official Java/Minecraft components in an isolated .dev directory');
-const root=path.resolve('.dev/030-world-verification'),service=new CompanionService(root),report={kind:'0.3.0-real-isolated-worlds',checks:[],at:new Date().toISOString()};
+const root=path.resolve('.dev/030-world-verification'),service=new CompanionService(root),report={packageVersion:VERSION,kind:'0.3.0-real-isolated-worlds',checks:[],at:new Date().toISOString()};
 const mark=(name,detail={})=>{report.checks.push({name,pass:true,...detail});console.log(JSON.stringify({check:name,...detail}));};let timer,preview,browser;
 async function entered(){for(let i=0;i<100;i++){const b=await bodyStatus(root,(await service.store.read()).mc);if(b?.online)return b;await delay(500);}throw new Error('Actual body did not enter world');}
 try{

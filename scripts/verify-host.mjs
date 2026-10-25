@@ -20,7 +20,7 @@ function check(name, value, detail) { report.checks.push({ name, pass: Boolean(v
 const waitFor = async fn => { const deadline = Date.now() + 15000; while (Date.now() < deadline) { if (await fn()) return true; await new Promise(r => setTimeout(r, 150)); } return false; };
 let ws, bodyServer;
 try {
-  const status = await call('/status'); check('four channels on actual DSH host', Object.keys(status.channels || {}).length === 4 && status.hostAvailable);
+  const status = await call('/status'); report.packageVersion=status.version; check('four channels on actual DSH host', Object.keys(status.channels || {}).length === 4 && status.hostAvailable);
   await call('/config', { character: { name: 'River', relationship: 'friend', tone: 'brief' } });
   const marker = `persona-marker-${randomUUID()}`;
   await call('/persona', { text: `You are River, a quiet friend. ${marker}` });

@@ -16,6 +16,7 @@ try {
   const page=await browser.newPage({viewport:{width:1440,height:1000}});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(tokenUrl);
+  report.packageVersion=(await (await page.request.get(origin+'/api/dsh-companion/status')).json()).version;
   // DSH maintains background connections, so network-idle need not settle. Readiness is the rendered shell.
   await page.waitForLoadState('networkidle',{timeout:5000}).catch(()=>{});
   const continueButton=page.getByRole('button',{name:'继续',exact:true});if(await continueButton.count())await continueButton.click();

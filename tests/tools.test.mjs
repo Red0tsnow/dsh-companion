@@ -5,6 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import {ConfigStore} from '../lib/core/config.js';
 const exec = promisify(execFile);
 const init = await import('../lib/core/initialize.js').catch(() => ({}));
 
@@ -36,4 +37,10 @@ test('stable runtime tool entrypoints override inherited data roots and refresh 
   await exec(process.execPath,[wrapper,'want','A second goal after upgrade','--why','Upgrade'], { env:{...process.env,DSH_COMPANION_HOME:path.join(root,'another-incorrect-root')} });
   assert.match(await fs.readFile(path.join(root,'runtime','mc','goal.md'),'utf8'),/A second goal after upgrade/);
   assert.equal(await fs.readFile(body,'utf8'),originalBody+'\n// retained user edit\n');
+});
+
+test('body trial checks candidate syntax with the resolved Node file before launching a body',async t=>{
+ const root=await fs.mkdtemp(path.join(os.tmpdir(),'companion-body-syntax-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));await init.initialize(root);await new ConfigStore(root).save({runtime:{nodePath:process.execPath}});
+ await fs.writeFile(path.join(root,'runtime','mc','mc-daemon-next.mjs'),'const = ;');
+ await assert.rejects(exec(process.execPath,['tools/mc/body.mjs','test'],{env:{...process.env,DSH_COMPANION_HOME:root},windowsHide:true}),error=>/SyntaxError/.test(error.stderr)&&!/file.*argument.*Object/.test(error.stderr));
 });
