@@ -1,0 +1,9 @@
+{
+  "version": "v4.18.41",
+  "asset": "NapCat.Shell.Windows.OneKey.zip",
+  "sha256": "46c3ec155aa61f12e89bbf97013a21243d00b0019b5565992a88852d7627f39c",
+  "publisherSubject": null,
+  "automaticExecution": false,
+  "reason": "The reviewed installer is not Authenticode signed. No publisher identity has been verified; automatic execution is disabled.",
+  "manualUrl": "https://napneko.github.io/guide/boot/Shell"
+}

@@ -1,0 +1,272 @@
+[
+  {
+    "source": "mc/mc-daemon.mjs",
+    "target": "data/mc-daemon.mjs",
+    "sha256": "f910afee89b78e661a3dd1dc7fd917b98ad559205e9903ab18e36e5472a7ecce"
+  },
+  {
+    "source": "mc/journal.mjs",
+    "target": "tools/mc/journal.mjs",
+    "sha256": "4324794e67e25a7f9e3b8501be43ace2a23814ed5849fa430ed773fd6ab57959"
+  },
+  {
+    "source": "mc/skills.mjs",
+    "target": "tools/mc/skills.mjs",
+    "sha256": "d59ee53325b343f52db606697c950e8015654b4b1e10828b6ae70d6f0f98101d"
+  },
+  {
+    "source": "whale-work/shouka.mjs",
+    "target": "tools/writings/shouka.mjs",
+    "sha256": "95938ff909d701d0460948599328ec89b01efed3f016c185daecd0fb09308a8d"
+  },
+  {
+    "source": "whale-work/nightline.mjs",
+    "target": "tools/writings/nightline.mjs",
+    "sha256": "41737a90390823dccaa9506025d8cd3b6497e53d2d03a0346040b1e0c8cdb23d"
+  },
+  {
+    "source": "bili-tools/lib/config.mjs",
+    "target": "tools\\bili\\lib\\config.mjs",
+    "sha256": "25ca6cac82bb9d2462a4fabf86c166a97e684b36d4687b27508fe13065910220"
+  },
+  {
+    "source": "bili-tools/lib/cred.mjs",
+    "target": "tools\\bili\\lib\\cred.mjs",
+    "sha256": "fa4ab268d3f24f7c76d4a8bfbcec9abdb996822e735f3fc9788135f5651dba5d"
+  },
+  {
+    "source": "bili-tools/lib/ffmpeg.mjs",
+    "target": "tools\\bili\\lib\\ffmpeg.mjs",
+    "sha256": "33d772cc6f5188ac415a63d39961d4ad0bf9d8b29be23d3ee712f235a62b6d9a"
+  },
+  {
+    "source": "bili-tools/lib/msgfeed.mjs",
+    "target": "tools\\bili\\lib\\msgfeed.mjs",
+    "sha256": "b1922d01dbdfb0cd3fa1d90c93d1585c50f06afc9a2353c22a3a5ef1cfbb53e8"
+  },
+  {
+    "source": "bili-tools/lib/night-config.mjs",
+    "target": "tools\\bili\\lib\\night-config.mjs",
+    "sha256": "383df63076c0c407073eaf7e5ea0a26df035f1235d83c016d7cf0683a3664364"
+  },
+  {
+    "source": "bili-tools/lib/night-plan.mjs",
+    "target": "tools\\bili\\lib\\night-plan.mjs",
+    "sha256": "add58a49a1f9cc5bbbaa21962d5ed1f380736d5d4464e051e8f188f7d2f9295f"
+  },
+  {
+    "source": "bili-tools/lib/nodebin.mjs",
+    "target": "tools\\bili\\lib\\nodebin.mjs",
+    "sha256": "42a9160711c46b3b467c5d6e91a8275944080c467468dcc4ddbbc3ba7472125b"
+  },
+  {
+    "source": "bili-tools/lib/paths.mjs",
+    "target": "tools\\bili\\lib\\paths.mjs",
+    "sha256": "3a61af3e4e1ab66e48150db2523877adf55da72ae9ebc0ed59e03e195b29249c"
+  },
+  {
+    "source": "bili-tools/lib/quota-gate.mjs",
+    "target": "tools\\bili\\lib\\quota-gate.mjs",
+    "sha256": "bef310744f3830d2e676202f6e2956d4d8063a608525bfab4286c13a0033aaa6"
+  },
+  {
+    "source": "bili-tools/lib/share-policy.mjs",
+    "target": "tools\\bili\\lib\\share-policy.mjs",
+    "sha256": "91d9f5d2ef541d9be3502c29317691db716a57924da4ce568f989b3a3ee937b9"
+  },
+  {
+    "source": "bili-tools/commands/bili-watch.mjs",
+    "target": "tools\\bili\\commands\\bili-watch.mjs",
+    "sha256": "593234d51ffe23faa7a8377783e3b76541934cdedaabf6d16240c8e73a299a31"
+  },
+  {
+    "source": "bili-tools/commands/comment-await.mjs",
+    "target": "tools\\bili\\commands\\comment-await.mjs",
+    "sha256": "555e5c9c0acdb46058f4a857b0fe6145c56fc8c767099432ca182a81917ed43a"
+  },
+  {
+    "source": "bili-tools/commands/comment-del.mjs",
+    "target": "tools\\bili\\commands\\comment-del.mjs",
+    "sha256": "bdb5ba47830522d6c1f37450d13561f644b3eea1afcbc2514fdab6efccb6ef38"
+  },
+  {
+    "source": "bili-tools/commands/comment-digest.mjs",
+    "target": "tools\\bili\\commands\\comment-digest.mjs",
+    "sha256": "b95b2b4978a489ddc8068d96510658d59a1b514a6700dfade9a9d562c2a683be"
+  },
+  {
+    "source": "bili-tools/commands/comment.mjs",
+    "target": "tools\\bili\\commands\\comment.mjs",
+    "sha256": "8370173ecb855b5ba8c1a66cbab882c17b56dcd7802c8c4083d104a96c40e85b"
+  },
+  {
+    "source": "bili-tools/commands/comments.mjs",
+    "target": "tools\\bili\\commands\\comments.mjs",
+    "sha256": "462d1e1a1ffcdc19a1be0a235153b1c32d4a2133aa300c7079f583a14b9bc2c3"
+  },
+  {
+    "source": "bili-tools/commands/danmaku-await.mjs",
+    "target": "tools\\bili\\commands\\danmaku-await.mjs",
+    "sha256": "9bfd64f0309fab8a420d4f1f111beb00b2c41cfba981ec552e2d3a2ae80a25c5"
+  },
+  {
+    "source": "bili-tools/commands/danmaku.mjs",
+    "target": "tools\\bili\\commands\\danmaku.mjs",
+    "sha256": "dca6353be5bf9c9c5ab52f8c8aa882d6666a40c4798502471511b8a981bca72d"
+  },
+  {
+    "source": "bili-tools/commands/debrief.mjs",
+    "target": "tools\\bili\\commands\\debrief.mjs",
+    "sha256": "6984f71190d196b67564b27449bbf6778d1d104b41ced5a40ecae62fc73aaf82"
+  },
+  {
+    "source": "bili-tools/commands/deps.mjs",
+    "target": "tools\\bili\\commands\\deps.mjs",
+    "sha256": "9d26d5e1e94d8f6c20383371028485cff7ee0147812e19b9e21cb77cdb4c4cb0"
+  },
+  {
+    "source": "bili-tools/commands/diary.mjs",
+    "target": "tools\\bili\\commands\\diary.mjs",
+    "sha256": "09ac25f191ce599f3ffea25b97fff9fb260c25604e3dbaa204d0372587fcd4fa"
+  },
+  {
+    "source": "bili-tools/commands/dm-await.mjs",
+    "target": "tools\\bili\\commands\\dm-await.mjs",
+    "sha256": "5fc9b8be9116ae5ceca3e156c529e0852e46175051b7488768c63462397c0224"
+  },
+  {
+    "source": "bili-tools/commands/dm.mjs",
+    "target": "tools\\bili\\commands\\dm.mjs",
+    "sha256": "ab994f6f447bb8fcdd2e0b0f664e37c396287a627fba2f78e44ba4f77cf199de"
+  },
+  {
+    "source": "bili-tools/commands/dynamic-image.mjs",
+    "target": "tools\\bili\\commands\\dynamic-image.mjs",
+    "sha256": "843f1dac0d1a39bccf8c310cbdbf9608e8558b1e0e8a8075dde32463ba5e5c8f"
+  },
+  {
+    "source": "bili-tools/commands/dynamic.mjs",
+    "target": "tools\\bili\\commands\\dynamic.mjs",
+    "sha256": "9ec0336ba0db72eb38e985f85a32fa7877ee7e7d760a03da26d709cff7921ce7"
+  },
+  {
+    "source": "bili-tools/commands/edit-dynamic.mjs",
+    "target": "tools\\bili\\commands\\edit-dynamic.mjs",
+    "sha256": "53a79570e0d0ffea3c7d9a95b47d5d647721dbb9c3c6bbf47bfea4d7caa8189d"
+  },
+  {
+    "source": "bili-tools/commands/fans.mjs",
+    "target": "tools\\bili\\commands\\fans.mjs",
+    "sha256": "192572871e6e06ab4a00b3fe383b72938e511b333cd006c9a7138442ed8eadc3"
+  },
+  {
+    "source": "bili-tools/commands/fav.mjs",
+    "target": "tools\\bili\\commands\\fav.mjs",
+    "sha256": "401b100d280ebe40a107016218db412f6e10504f6f1c989a54d3d9279f3d0565"
+  },
+  {
+    "source": "bili-tools/commands/feed.mjs",
+    "target": "tools\\bili\\commands\\feed.mjs",
+    "sha256": "56291b981469d452e5dd9a9a9b0525958b6b09c19bd2f7e69a0a3e2f792c508b"
+  },
+  {
+    "source": "bili-tools/commands/likes.mjs",
+    "target": "tools\\bili\\commands\\likes.mjs",
+    "sha256": "10556d9c7433bbf917f36846f0c0d85815b1b5f221c541c05d43a40ba376ab1b"
+  },
+  {
+    "source": "bili-tools/commands/notify.mjs",
+    "target": "tools\\bili\\commands\\notify.mjs",
+    "sha256": "b76b7b2630a9f947c228cd46bc32f6e12b8af3c744e6014b7a26898e3ccb99e1"
+  },
+  {
+    "source": "bili-tools/commands/owner-videos.mjs",
+    "target": "tools\\bili\\commands\\owner-videos.mjs",
+    "sha256": "04bbcf265b7ee47d403f067eaebaa56fcbbe11d73aa0251edf2b1f76fd136fba"
+  },
+  {
+    "source": "bili-tools/commands/quota.mjs",
+    "target": "tools\\bili\\commands\\quota.mjs",
+    "sha256": "5fe33c6cef3c106d6004cef5d5432d2cda87db75c64d08ee267671eb18105c53"
+  },
+  {
+    "source": "bili-tools/commands/reply-draft.mjs",
+    "target": "tools\\bili\\commands\\reply-draft.mjs",
+    "sha256": "2bcf7e64e46f6e93797e1e550e0ccd3b15108e86d2d4568794f8fd07bd366751"
+  },
+  {
+    "source": "bili-tools/commands/search.mjs",
+    "target": "tools\\bili\\commands\\search.mjs",
+    "sha256": "3e631f4cf1904812f4b89f4e5c58a0f47f5f1aabd6eb766cbe39ffa578eec50b"
+  },
+  {
+    "source": "bili-tools/commands/selftest.mjs",
+    "target": "tools\\bili\\commands\\selftest.mjs",
+    "sha256": "8d0b4f86ade1594e131b9d6cc393503433bedbbd74cbfad261983071749094f2"
+  },
+  {
+    "source": "bili-tools/commands/subtitles.mjs",
+    "target": "tools\\bili\\commands\\subtitles.mjs",
+    "sha256": "1aeda885e5028404078dfa5806166740fefc8db2307e91a44da172f6b88ea383"
+  },
+  {
+    "source": "bili-tools/commands/video-content.mjs",
+    "target": "tools\\bili\\commands\\video-content.mjs",
+    "sha256": "aeb2afd652c60c20899f5a1a7f6cc3d662191d248d9f10966e80a0a5f915b16b"
+  },
+  {
+    "source": "bili-tools/commands/whale-night.mjs",
+    "target": "tools\\bili\\commands\\whale-night.mjs",
+    "sha256": "a4ed759c9129fa8dc0a90398fe8d9653e84d759df5e6a0a742431ac32c850eb4"
+  },
+  {
+    "source": "bili-tools/verify/comment-exists.mjs",
+    "target": "tools\\bili\\verify\\comment-exists.mjs",
+    "sha256": "82f03b6c470176fb8234fd34be12423d31c9a16ba026d2d74e422ac3953dc5c8"
+  },
+  {
+    "source": "bili-tools/verify/dryrun.mjs",
+    "target": "tools\\bili\\verify\\dryrun.mjs",
+    "sha256": "3b2cc6650bacbd0cfcce02cebd08c85eda16e6be3a7a96c075a2a4cd39815bcb"
+  },
+  {
+    "source": "bili-tools/verify/dynamic-inspect.mjs",
+    "target": "tools\\bili\\verify\\dynamic-inspect.mjs",
+    "sha256": "a463e2eedf5be0ce864907d06029ce9ff47d914463581c96a3dec198a3c252e2"
+  },
+  {
+    "source": "bili-tools/verify/mention-check.mjs",
+    "target": "tools\\bili\\verify\\mention-check.mjs",
+    "sha256": "b655b0359213ca439d30bd1441f47969ef6bb4892f8ac6de7aa50e126ff4e5a6"
+  },
+  {
+    "source": "bili-tools/verify/session.mjs",
+    "target": "tools\\bili\\verify\\session.mjs",
+    "sha256": "eae58a01a12aa9cd20c46ded0b98f0db312f810a97729e258900227b4585226c"
+  },
+  {
+    "source": "bili-tools/verify/thread.mjs",
+    "target": "tools\\bili\\verify\\thread.mjs",
+    "sha256": "870257a4e5aaa5c8030806b7eb0352c1e6e70532b546cd74049c782cd6129ee8"
+  },
+  {
+    "source": "bili-tools/verify/verify-reply.mjs",
+    "target": "tools\\bili\\verify\\verify-reply.mjs",
+    "sha256": "3ddea36a6e06f2152d99495bba5d1b08ba9999a9710510d1cacb612424f3ec70"
+  },
+  {
+    "source": "bili-tools/verify/watch-replies.mjs",
+    "target": "tools\\bili\\verify\\watch-replies.mjs",
+    "sha256": "61265cdfe9e6fa91bf617d10cb9c248ebd1f45bd9a6b200454e265e990db7078"
+  },
+  {
+    "source": "bili-tools/diagnostics/fetch-covers.mjs",
+    "target": "tools\\bili\\diagnostics\\fetch-covers.mjs",
+    "sha256": "f14bce81fc42fe7fbbd6e938d3f87c67e27d41d4deee0beaf334abf1c7752be6"
+  },
+  {
+    "source": "bili-tools/diagnostics/whois.mjs",
+    "target": "tools\\bili\\diagnostics\\whois.mjs",
+    "sha256": "dfad6dc7901bd91aa3ea7b1f1adfd18ab946f852e74eddc0eeddbf8bb993d346"
+  }
+]

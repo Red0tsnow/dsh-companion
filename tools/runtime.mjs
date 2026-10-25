@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { dataRoot, paths, PACKAGE_ROOT } from '../lib/core/paths.js';
+import { DEFAULTS, validateConfig } from '../lib/core/config.js';
+export const ROOT = dataRoot();
+export const P = paths(ROOT);
+export const CONFIG = validateConfig(fs.existsSync(P.config) ? JSON.parse(fs.readFileSync(P.config, 'utf8')) : DEFAULTS);
+export const SECRETS = fs.existsSync(P.secrets) ? JSON.parse(fs.readFileSync(P.secrets, 'utf8')) : {};
+export const require = createRequire(path.join(PACKAGE_ROOT, 'package.json'));

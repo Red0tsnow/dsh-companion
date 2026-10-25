@@ -1,0 +1,6 @@
+node_modules/
+.dev/
+artifacts/
+*.tgz
+coverage/
+.DS_Store

@@ -1,0 +1,53 @@
+dsh-companion 0.2.0
+Copyright (c) 2026 dsh-companion contributors
+Project license: MIT (see LICENSE).
+
+Owned source adaptations
+-----------------------
+The character, Minecraft, writing, and Bilibili tools were adapted from the
+project author's local tools. data/provenance.json records source-relative
+names and SHA-256 hashes of the reviewed input snapshots. It contains no
+absolute installation paths or account credentials. These tools are maintained
+as part of this package; the running source deployment is not modified.
+
+The OneBot v11 client is an independent implementation of the public protocol:
+https://github.com/botuniverse/onebot-11
+It does not import another DSH QQ plugin's implementation.
+
+Runtime dependencies
+--------------------
+This project has third-party npm dependencies. Their source is not copied into
+this package's own lib/tools directories. npm installs the packages separately,
+with their original license files. Direct runtime dependencies at this version:
+
+  ws 8.22.0                       MIT
+  mineflayer 4.39.0               MIT
+  mineflayer-pathfinder 2.4.5     MIT
+  mineflayer-collectblock 1.6.0   MIT
+  qrcode 1.5.4                   MIT
+  undici 7.30.1                  MIT
+
+Transitive dependencies retain their upstream notices and licenses. Inspect
+package-lock.json and the installed dependency license files for the exact tree.
+The host provides React to the DSH client; the standalone development preview
+uses the separately installed React/React DOM packages (MIT).
+
+Not included
+------------
+Minecraft server binaries, game assets/world saves, NapCat, QQ, Java, Python,
+FFmpeg, account cookies, platform signing code, and platform internal signing
+constants are not distributed by dsh-companion. The Heybox adapter invokes a
+user-provided external CLI; no Heybox signing implementation is included.
+
+The setup wizard may download Minecraft server components from Mojang, portable
+Eclipse Temurin Java from Adoptium or the version-required Mojang Java runtime,
+and the NapCat Windows installer from the
+official NapNeko GitHub release, only after explicit user confirmation. These
+files remain separate user-managed runtime data and retain upstream terms.
+The user accepts the Minecraft EULA and completes account login themselves.
+NapCat automatic execution requires a packaged version/hash anchor, a valid
+Authenticode signature with a verified publisher, and explicit confirmation.
+The currently reviewed unsigned installer is manual-install only.
+
+DSH, Minecraft, QQ, NapCat, Bilibili, and Heybox are names of their respective
+projects or services. This package does not imply their endorsement.
