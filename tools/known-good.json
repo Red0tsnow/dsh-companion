@@ -1,9 +1,9 @@
 {
   "version": "v4.18.41",
-  "asset": "NapCat.Shell.Windows.OneKey.zip",
-  "sha256": "46c3ec155aa61f12e89bbf97013a21243d00b0019b5565992a88852d7627f39c",
-  "publisherSubject": null,
-  "automaticExecution": false,
-  "reason": "The reviewed installer is not Authenticode signed. No publisher identity has been verified; automatic execution is disabled.",
+  "asset": "NapCat.Shell.Windows.Node.zip",
+  "sha256": "51fbb10e7bcd56b0c2a6de86c37811e7518330e48a137ac689ab1e4d8627d3f0",
+  "mode": "portable",
+  "automaticExecution": true,
+  "reason": "Reviewed portable archive. Run its root node.exe and index.js only after explicit confirmation; never execute installers or elevated inner launchers.",
   "manualUrl": "https://napneko.github.io/guide/boot/Shell"
 }

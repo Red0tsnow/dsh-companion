@@ -15,9 +15,21 @@ export function auditReleaseGuards(pin,source) {
   if(!pin||!/^\b[0-9a-f]{64}\b$/i.test(pin.sha256||'')||typeof pin.version!=='string'||!pin.version.trim()||typeof pin.asset!=='string'||!pin.asset.trim())errors.push({file:'tools/known-good.json',rule:'trust-anchor',detail:'A nonempty version/asset and 64 hex SHA-256 are required'});
   if(/\bMC_VERSION\b/.test(source))add('literal-minecraft-version','Versions must come from configuration and the supported release intersection');
   const prepare=source.slice(source.indexOf('async startQQ('),source.indexOf('async openQQInstaller('));
-  const open=source.slice(source.indexOf('async openQQInstaller('),source.indexOf('async launchQQ('));
   const pinAt=prepare.indexOf('assertPinnedRelease(release,pin)'),downloadAt=prepare.indexOf('await downloadVerified(');
   if(!prepare.includes('await knownGood()')||pinAt<0||downloadAt<0||pinAt>downloadAt||!prepare.includes('sha256:checksum')||/\bspawn\s*\(/.test(prepare))add('pinned-download','QQ downloads must pass the packaged anchor before downloading; no execution during preparation');
+  if(pin?.mode==='portable'){
+    // Portable mode runs a verified node.exe from inside the managed directory. There is
+    // no installer and no Authenticode to check, so the guards that matter are: the
+    // pinned zip is extracted (not executed), the launch needs an explicit version/hash
+    // confirmation, and nothing launches before the extracted files are re-verified.
+    const confirm=source.slice(source.indexOf('confirmPortable('),source.indexOf('async openQQInstaller('));
+    const launch=source.slice(source.indexOf('async launchQQ('),source.indexOf('async qqLogin('));
+    if(!prepare.includes('preparePortable(')||!prepare.includes('isPortable(pin)'))add('portable-preparation','Portable mode must gate on isPortable() and extract through preparePortable()');
+    if(!confirm.includes('automaticExecution!==true')||!confirm.includes('body.confirmExecution!==true')||!confirm.includes('body.sha256!==pin.sha256')||!confirm.includes('body.version!==pin.version'))add('portable-confirmation','Portable execution requires an automaticExecution pin and explicit version/hash confirmation');
+    if(!launch.includes('verifyPortable(')||!launch.includes('launchPortable(')||/spawn\s*\(\s*state\.installer/.test(launch))add('portable-execution','Portable launch must re-verify the directory and go through launchPortable(); never spawn an installer');
+    return errors;
+  }
+  const open=source.slice(source.indexOf('async openQQInstaller('),source.indexOf('async launchQQ('));
   const signatureAt=open.indexOf('authenticode)(state.installer)'),guardAt=open.indexOf('assertAuthenticode(signature,pin)'),spawnAt=open.indexOf('spawn(state.installer');
   if(signatureAt<0||guardAt<signatureAt||spawnAt<guardAt||!open.includes('body.confirmExecution!==true')||!open.includes('body.sha256!==pin.sha256'))add('signed-execution','Installer execution requires explicit matching confirmation and Authenticode publisher validation');
   return errors;

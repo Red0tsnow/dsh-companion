@@ -11,6 +11,8 @@ const copy={
     modWarning:'装了模组的客户端，她的身体可能因注册表不一致被踢；建议用原版客户端。',findLan:'查找并进入世界',directory:'已有服务端目录',java:'Java 路径（留空自动检测）',inspect:'检查并进入世界',
     'discovering-lan':'正在查找局域网世界（最多 4 秒）…','checking-existing':'正在逐项检查已有服务端…','server-only-ready':'世界已开启；该版本身体暂不支持。',
     manual:'请自行安装 NapCat，然后在下方高级设置填写连接地址。',manualLink:'打开 NapCat 手动安装说明',trust:'安装助手版本 / SHA-256 前 8 位',
+    portableConsent:'将运行 NapCat 便携版（非官方 QQ 客户端）',portablePrepare:'准备并启动 QQ 连接',portableScan:'只需用角色 QQ 扫码，并在手机上确认登录。插件会自动检查连接。',portableQr:'QQ 登录二维码',
+    'extracting-portable':'正在解压并校验 NapCat 便携版…','starting-portable':'正在启动便携版并获取登录二维码…',
     unsigned:'当前安装助手没有可验证的发布者签名，已关闭自动执行。请按手动说明安装。',execution:'我已核对显示的版本号与哈希，确认执行', 'manual-required':'自动安装已停止，请按手动说明继续。',
     consent:'允许从官方来源下载所需组件',eula:'我已阅读并同意 Minecraft 使用协议',prepare:'准备并开启世界',
     qqTitle:'让角色来到 QQ',qqIntro:'为角色使用一个独立 QQ 账号。按这里提示的方式准备连接，并用手机扫码确认登录。',
@@ -39,6 +41,8 @@ const copy={
     modWarning:'Modded clients may kick the character due to registry differences. A vanilla client is recommended.',findLan:'Find and join world',directory:'Existing server folder',java:'Java path (optional; auto-detect)',inspect:'Check and enter world',
     'discovering-lan':'Discovering LAN worlds (up to 4 seconds)…','checking-existing':'Checking the existing server…','server-only-ready':'World is open; this version cannot host the character yet.',
     manual:'Install NapCat yourself, then enter its connection address in advanced settings below.',manualLink:'NapCat manual installation guide',trust:'Installer version / first 8 SHA-256 characters',
+    portableConsent:'Run NapCat portable (an unofficial QQ client)',portablePrepare:'Prepare and start QQ connection',portableScan:'Scan using the character QQ and confirm on your phone. The connection is checked automatically.',portableQr:'QQ login QR code',
+    'extracting-portable':'Extracting and verifying NapCat portable…','starting-portable':'Starting portable runtime and requesting a login code…',
     unsigned:'This installer has no verified publisher signature. Automatic execution is disabled. Please use the manual guide.',execution:'I checked the displayed version and hash and confirm execution','manual-required':'Automatic installation stopped. Please follow the manual guide.',
     consent:'Allow required components to download from official sources',eula:'I have read and accept the Minecraft usage agreement',prepare:'Prepare and open world',
     qqTitle:'Bring your character to QQ',qqIntro:'Use a separate QQ account for the character. Follow the preparation steps here and confirm login on your phone.',
@@ -63,6 +67,7 @@ export function SetupFlow({id,lang,request,onComplete,ownerId='',selfId='',onlin
   const t=copy[lang]||copy.zh;
   const [open,setOpen]=useState(false),[consent,setConsent]=useState(false),[eula,setEula]=useState(false),[owner,setOwner]=useState(ownerId),[self,setSelf]=useState(selfId);
   const [state,setState]=useState(null),[login,setLogin]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
+  const [qqLogin,setQqLogin]=useState(null);
   const [source,setSource]=useState('managed'),[catalog,setCatalog]=useState(null),[version,setVersion]=useState(''),[serverOnly,setServerOnly]=useState(false),[directory,setDirectory]=useState(''),[javaPath,setJavaPath]=useState(''),[trust,setTrust]=useState(null),[execution,setExecution]=useState(false);
   const completed=useRef(null),mounted=useRef(true),completeRef=useRef(onComplete);completeRef.current=onComplete;
   useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
@@ -83,6 +88,7 @@ export function SetupFlow({id,lang,request,onComplete,ownerId='',selfId='',onlin
     const timer=setInterval(poll,2500);return()=>{active=false;clearInterval(timer);};
   },[login?.id,login?.phase,request,lang]);
   const newCode=()=>perform(async()=>setLogin(await request('/setup/bili/start',{})));
+  useEffect(()=>{if(!open||id!=='qq'||state?.phase!=='waiting-login'||online)return;let active=true,pending=false;const read=async()=>{if(pending||document.hidden)return;pending=true;try{const data=await request('/setup/qq/login');if(active)setQqLogin(data);}catch(e){if(active)setError(friendly(e.message,lang));}finally{pending=false;}};read();const timer=setInterval(read,2000);return()=>{active=false;clearInterval(timer);};},[open,id,state?.phase,online,request,lang]);
   const begin=()=>{setOpen(true);if(id==='bili'&&!login)newCode();};
   const title=t[`${id}Title`],progress=state?.total>0?Math.min(100,Math.round(state.bytes/state.total*100)):null;
   return <div className="dsc-setup">
@@ -117,10 +123,11 @@ export function SetupFlow({id,lang,request,onComplete,ownerId='',selfId='',onlin
           <label className="field"><span>{t.self}</span><input inputMode="numeric" value={self} onChange={e=>setSelf(e.target.value)} autoComplete="off"/></label>
           <p className="dsc-note">{t.different}</p>
           <label className="dsc-check"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)}/>{t.consent}</label>
-          <button className="primary" disabled={!consent||!/^\d{5,12}$/.test(owner)||!/^\d{5,12}$/.test(self)||owner===self||busy} onClick={()=>perform(async()=>setState(await request('/setup/qq',{downloadConsent:consent,ownerId:owner,selfId:self})))}>{t.qqPrepare}</button>
+          {trust.mode==='portable'&&<label className="dsc-check"><input type="checkbox" checked={execution} onChange={e=>setExecution(e.target.checked)}/>{t.portableConsent}</label>}
+          <button className="primary" disabled={!consent||(trust.mode==='portable'&&!execution)||!/^\d{5,12}$/.test(owner)||!/^\d{5,12}$/.test(self)||owner===self||busy} onClick={()=>perform(async()=>setState(await request('/setup/qq',{downloadConsent:consent,ownerId:owner,selfId:self,...(trust.mode==='portable'?{confirmExecution:execution,version:trust.version,sha256:trust.sha256}:{})})))}>{trust.mode==='portable'?t.portablePrepare:t.qqPrepare}</button>
         </>}
         {trust?.automaticExecution===true&&!error&&['helper-ready','install-helper'].includes(state?.phase)&&<><label className="dsc-check"><input type="checkbox" checked={execution} onChange={e=>setExecution(e.target.checked)}/>{t.execution}</label><div className="dsc-toolbar"><button className={state.phase==='helper-ready'?'primary':''} disabled={busy||!execution} onClick={()=>perform(async()=>setState(await request('/setup/qq/open',{confirmExecution:execution,version:trust.version,sha256:trust.sha256})))}>{t.openHelper}</button><p className="dsc-note">{t.helperInstall}</p>{state.phase==='install-helper'&&<button disabled={busy} onClick={()=>perform(async()=>{setState(await request('/setup/qq/launch',{}));await completeRef.current('qq');})}>{t.launchHelper}</button>}</div></>}
-        {state?.phase==='waiting-login'&&!online&&<><p className="dsc-note">{t.helperLogin}</p><button disabled={busy} onClick={()=>perform(async()=>{const result=await request('/setup/qq/check',{});if(!result.ok)throw new Error(t.notConnected);setState(v=>({...v,phase:'complete'}));await completeRef.current('qq');})}>{t.check}</button></>}
+        {state?.phase==='waiting-login'&&!online&&<><p className="dsc-note">{trust?.mode==='portable'?t.portableScan:t.helperLogin}</p>{qqLogin?.image&&<figure className="dsc-qr"><img src={qqLogin.image} alt={t.portableQr} width="220" height="220"/></figure>}<button disabled={busy} onClick={()=>perform(async()=>{const result=await request('/setup/qq/check',{});if(!result.ok)throw new Error(t.notConnected);setState(v=>({...v,phase:'complete'}));await completeRef.current('qq');})}>{t.check}</button></>}
         {online&&<p className="dsc-message">{t.connected}</p>}
       </>}
       {id==='bili'&&<>

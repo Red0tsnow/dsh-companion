@@ -17,9 +17,17 @@ const known={version:'v1.2.3',asset:'NapCat.Shell.Windows.OneKey.zip',sha256:'a'
 
 test('release audit rejects malformed anchors, literal versions and missing download/execution guards',async()=>{
   const source=await fs.readFile(new URL('../lib/core/setup.js',import.meta.url),'utf8');
-  assert.deepEqual(auditReleaseGuards(known,source),[]);
-  for(const pin of [{...known,sha256:'x'.repeat(64)},{...known,version:''},{...known,asset:''}])assert.ok(auditReleaseGuards(pin,source).length);
-  for(const changed of [source+'\nconst MC_VERSION="1.21.8";',source.replace('artifact=assertPinnedRelease(release,pin)','artifact=release.assets[0]'),source.replace('assertAuthenticode(signature,pin);',''),source.replace('const signature=await(this.options.verifySignature||authenticode)(state.installer);','const signature={status:"Valid"};')])assert.ok(auditReleaseGuards(known,changed).length);
+  const portable=JSON.parse(await fs.readFile(new URL('../tools/known-good.json',import.meta.url),'utf8'));
+  assert.equal(portable.mode,'portable');
+  assert.deepEqual(auditReleaseGuards(portable,source),[]);
+  for(const pin of [{...portable,sha256:'x'.repeat(64)},{...portable,version:''},{...portable,asset:''}])assert.ok(auditReleaseGuards(pin,source).length);
+  for(const changed of [
+    source+'\nconst MC_VERSION="1.21.8";',
+    source.replace('artifact=assertPinnedRelease(release,pin)','artifact=release.assets[0]'),
+    source.replace('body.confirmExecution!==true','false'),
+    source.replace('await verifyPortable(this.root,state.directory,pin)',''),
+    source.replace('preparePortable(','notPrepared('),
+  ])assert.ok(auditReleaseGuards(portable,changed).length,changed.slice(0,60));
 });
 
 test('QQ manager rejects changed releases without downloading or executing and falls back to manual instructions',async t=>{
@@ -32,13 +40,20 @@ test('QQ manager rejects changed releases without downloading or executing and f
   }
 });
 
-test('QQ manager never executes or launches when Authenticode validation fails',async t=>{
-  for(const signature of [{status:'NotSigned',subject:null},{status:'Valid',subject:'CN=Wrong'}]){
-    const root=await fs.mkdtemp(path.join(os.tmpdir(),'companion-signature-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));let executions=0;const bytes=Buffer.from('fixture zip'),pin={...known,sha256:createHash('sha256').update(bytes).digest('hex')};
-    const manager=new SetupManager(new ConfigStore(root),{platform:'win32',knownGood:pin,fetch:async url=>String(url).includes('/releases/latest')?Response.json({tag_name:pin.version,assets:[{name:pin.asset,digest:'sha256:'+pin.sha256,browser_download_url:'https://github.com/NapNeko/NapCatQQ/releases/download/v1/file.zip'}]}):new Response(bytes),extract:async(_,a,d)=>{await fs.mkdir(d,{recursive:true});await fs.writeFile(path.join(d,'NapCatInstaller.exe'),'fixture');},verifySignature:async()=>signature,openInstaller:async()=>executions++,launchHelper:async()=>executions++});t.after(()=>manager.close());
-    await manager.startQQ({downloadConsent:true,ownerId:'12345',selfId:'90001'});await manager.wait('qq');assert.equal(manager.status().qq.phase,'helper-ready');
-    await assert.rejects(manager.openQQInstaller({confirmExecution:true,version:pin.version,sha256:pin.sha256}),/签名|发布者/);assert.equal(manager.status().qq.phase,'manual-required');await assert.rejects(manager.launchQQ(),/手动|校验/);assert.equal(executions,0);
-  }
+test('portable runtime refuses to launch after the extracted files changed',async t=>{
+  const root=await fs.mkdtemp(path.join(os.tmpdir(),'companion-portable-tamper-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));
+  const bytes=Buffer.from('portable fixture');const pin={version:'v-fixture',asset:'NapCat.Shell.Windows.Node.zip',sha256:createHash('sha256').update(bytes).digest('hex'),mode:'portable',automaticExecution:true};
+  let launches=0;
+  const manager=new SetupManager(new ConfigStore(root),{platform:'win32',knownGood:pin,
+    fetch:async url=>String(url).includes('/releases/latest')?Response.json({tag_name:pin.version,assets:[{name:pin.asset,digest:'sha256:'+pin.sha256,size:bytes.length,browser_download_url:'https://github.com/NapNeko/NapCatQQ/releases/download/v1/portable.zip'}]}):new Response(bytes),
+    extract:async(_,archive,destination)=>{await fs.mkdir(path.join(destination,'napcat'),{recursive:true});for(const [name,body] of Object.entries({'napcat.bat':'fixture','node.exe':'fixture','index.js':'fixture','wrapper.node':'fixture','napcat/napcat.mjs':'fixture'}))await fs.writeFile(path.join(destination,name),body);},
+    launchPortable:async()=>{launches++;},
+  });t.after(()=>manager.close());
+  await manager.startQQ({downloadConsent:true,confirmExecution:true,version:pin.version,sha256:pin.sha256,ownerId:'12345',selfId:'90001'});
+  await manager.wait('qq');assert.equal(launches,1);
+  await fs.writeFile(path.join(root,'qq','napcat','index.js'),'tampered');
+  await assert.rejects(manager.launchQQ({confirmExecution:true,version:pin.version,sha256:pin.sha256}),/changed|改变/i);
+  assert.equal(launches,1);
 });
 test('pinned helper rejects changed asset, digest and version before any download',()=>{
   assert.equal(typeof trust.assertPinnedRelease,'function');

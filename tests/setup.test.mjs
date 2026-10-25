@@ -57,20 +57,24 @@ test('Minecraft preparation creates its own world with distinct automatic ports 
   assert.equal(JSON.stringify(manager.status()).includes('bodyToken'),false);
 });
 
-test('QQ preparation only configures the downloaded helper and does not expose its generated connection token',async t=>{
-  assert.equal(typeof setup.SetupManager,'function');const dir=await root(t),store=new ConfigStore(dir),bytes=Buffer.from('official helper fixture');let launched=0;
-  await fs.mkdir(path.join(dir,'components',`qq-helper-${sha(bytes)}`),{recursive:true}); // interrupted older extraction
-  const manager=new setup.SetupManager(store,{platform:'win32',
-    knownGood:{version:'v-fixture',asset:'NapCat.Shell.Windows.OneKey.zip',sha256:sha(bytes),publisherSubject:'CN=Fixture Publisher',automaticExecution:true},verifySignature:async()=>({status:'Valid',subject:'CN=Fixture Publisher'}),
-    fetch:async url=>String(url).includes('/releases/latest')?Response.json({tag_name:'v-fixture',assets:[{name:'NapCat.Shell.Windows.OneKey.zip',digest:'sha256:'+sha(bytes),size:bytes.length,browser_download_url:'https://github.com/NapNeko/NapCatQQ/releases/download/v1/helper.zip'}]}):new Response(bytes),
-    extract:async(_,archive,destination)=>{await fs.mkdir(path.join(destination,'NapCat.Test.Shell','napcat'),{recursive:true});await fs.writeFile(path.join(destination,'NapCatInstaller.exe'),'fixture');await fs.writeFile(path.join(destination,'NapCat.Test.Shell','napcat.bat'),'fixture');await fs.writeFile(path.join(destination,'NapCat.Test.Shell','napcat','napcat.mjs'),'fixture');},
-    openInstaller:async()=>{},launchHelper:async()=>{launched++;},
+test('QQ preparation configures the portable runtime and never exposes its connection token',async t=>{
+  assert.equal(typeof setup.SetupManager,'function');const dir=await root(t),store=new ConfigStore(dir),bytes=Buffer.from('official portable fixture');let launched=0,downloads=0;
+  const pin={version:'v-fixture',asset:'NapCat.Shell.Windows.Node.zip',sha256:sha(bytes),mode:'portable',automaticExecution:true};
+  const manager=new setup.SetupManager(store,{platform:'win32',knownGood:pin,
+    fetch:async url=>{if(String(url).includes('/releases/latest'))return Response.json({tag_name:'v-fixture',assets:[{name:pin.asset,digest:'sha256:'+sha(bytes),size:bytes.length,browser_download_url:'https://github.com/NapNeko/NapCatQQ/releases/download/v1/portable.zip'}]});downloads++;return new Response(bytes);},
+    extract:async(_,archive,destination)=>{await fs.mkdir(path.join(destination,'napcat'),{recursive:true});for(const [name,body] of Object.entries({'napcat.bat':'fixture','node.exe':'fixture','index.js':'fixture','wrapper.node':'fixture','napcat/napcat.mjs':'fixture'}))await fs.writeFile(path.join(destination,name),body);},
+    launchPortable:async()=>{launched++;},
   });t.after(()=>manager.close());
-  await manager.startQQ({downloadConsent:true,ownerId:'12345',selfId:'90001'});await manager.wait('qq');assert.equal(manager.status().qq.phase,'helper-ready');assert.equal((await store.read()).qq.enabled,false);
-  await manager.openQQInstaller({confirmExecution:true,version:'v-fixture',sha256:sha(bytes)});await manager.launchQQ();const config=await store.read(),token=(await store.secrets('qq')).token;
-  assert.equal(launched,1);assert.equal(config.owner.id,'12345');assert.equal(config.qq.selfId,'90001');assert.ok(token.length>20);assert.equal(JSON.stringify(manager.status()).includes(token),false);assert.equal(manager.status().qq.phase,'waiting-login');
+  // 没有确认版本与哈希时：不下载、不运行
+  await assert.rejects(manager.startQQ({downloadConsent:true,ownerId:'12345',selfId:'90001'}),/confirm|确认/i);
+  assert.equal(downloads,0);assert.equal(launched,0);
+  await manager.startQQ({downloadConsent:true,confirmExecution:true,version:pin.version,sha256:pin.sha256,ownerId:'12345',selfId:'90001'});await manager.wait('qq');
+  assert.equal(launched,1);assert.equal(manager.status().qq.phase,'waiting-login');
+  const config=await store.read(),token=(await store.secrets('qq')).token;
+  assert.equal(config.owner.id,'12345');assert.equal(config.qq.selfId,'90001');assert.ok(token.length>20);
+  assert.equal(JSON.stringify(manager.status()).includes(token),false);
   const privateState=JSON.parse(await fs.readFile(path.join(dir,'setup-private.json'),'utf8'));
-  const network=JSON.parse(await fs.readFile(path.join(privateState.qq.directory,'NapCat.Test.Shell','napcat','config','onebot11_90001.json'),'utf8'));
+  const network=JSON.parse(await fs.readFile(path.join(privateState.qq.directory,'napcat','config','onebot11_90001.json'),'utf8'));
   assert.equal(network.network.websocketServers[0].token,token);assert.equal(network.network.websocketServers[0].host,'127.0.0.1');
 });
 test('a failed preparation reports a retryable state and never enables an incomplete channel',async t=>{
