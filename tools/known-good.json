@@ -5,5 +5,17 @@
   "mode": "portable",
   "automaticExecution": true,
   "reason": "Reviewed portable archive. Run its root node.exe and index.js only after explicit confirmation; never execute installers or elevated inner launchers.",
-  "manualUrl": "https://napneko.github.io/guide/boot/Shell"
+  "manualUrl": "https://napneko.github.io/guide/boot/Shell",
+  "paper": {
+    "version": "1.21.8-60",
+    "url": "https://fill-data.papermc.io/v1/objects/8de7c52c3b02403503d16fac58003f1efef7dd7a0256786843927fa92ee57f1e/paper-1.21.8-60.jar",
+    "sha256": "8de7c52c3b02403503d16fac58003f1efef7dd7a0256786843927fa92ee57f1e",
+    "size": 52811717
+  },
+  "skinsrestorer": {
+    "version": "15.12.6",
+    "url": "https://cdn.modrinth.com/data/TsLS8Py5/versions/ziIzW16f/SkinsRestorer.jar",
+    "sha512": "0ec5070bff7db5098d3fe04b53e6bcd59d74806184b3599ada48ce5576ff4346eece020a3106ba84bdfb703bd138da6d232b7cabf625394291f7728b8dc04497",
+    "size": 8016648
+  }
 }
