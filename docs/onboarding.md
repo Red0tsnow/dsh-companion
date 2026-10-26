@@ -89,6 +89,10 @@ node companion.mjs mc places rm garden
 
 **Before signing in:** New or long-unused secondary QQ accounts may trigger risk checks, verification or restrictions, and may need periodic QR sign-in after security alerts. This plugin has not been tested with accounts in long-term regular use. Main accounts are not recommended. Use at your own risk; this plugin accepts no responsibility for resulting restrictions or other losses.
 
+**协议风险：** 用非官方客户端登录 QQ 可能**违反 QQ 用户协议**，平台有权据此限制或封停账号。插件不在你本机之外做任何事，也不绕过平台的安全机制；是否使用由你决定。
+
+**Terms:** Signing a QQ account in through a third-party client may **violate QQ's terms of service**, and the platform may restrict or ban the account as a result. The plugin does nothing outside your machine and bypasses no platform security; the decision is yours.
+
 点击“连接 QQ”，填两个不同的 QQ 号（你的、和角色用的那个），勾选允许官方下载。插件会下载**官方便携版 NapCat**（固定版本 + SHA-256 校验），解压到角色数据目录后直接运行——**不执行安装器、不需要管理员权限、不写注册表**。
 
 开始运行前，面板会显示将运行的版本号与哈希前 8 位，你要点一次确认。之后 NapCat 会给出登录二维码，**用角色的 QQ 扫码登录**（这一步只能你来做，插件不会替你登录，也不会读取你现有的 QQ 或 NapCat 配置）。
@@ -106,6 +110,10 @@ node companion.mjs mc places rm garden
 **登录前请注意：** 新建或多年未使用的 B站小号可能触发平台风控、验证或账号限制。本插件尚未在长期使用的账号上进行测试，**不推荐使用主号**。使用风险由用户自行承担，本插件不承担由此产生的账号限制或其他损失。
 
 **Before signing in:** New or long-unused secondary Bilibili accounts may trigger platform risk checks, verification or restrictions. This plugin has not been tested with accounts in long-term regular use. Main accounts are not recommended. Use at your own risk; this plugin accepts no responsibility for resulting restrictions or other losses.
+
+**协议风险：** 用自动化方式调用 B站接口（发评论、动态、私信等）可能**违反 B站用户协议**，账号可能被限制。插件只使用你扫码得到的登录态，不绕过验证码或其他安全机制。只读操作风险较低，写操作请自行掂量。
+
+**Terms:** Automating Bilibili actions (comments, dynamics, direct messages) may **violate Bilibili's terms of service** and the account may be restricted. The plugin uses only the session you obtained by scanning, and bypasses no captcha or other security mechanism. Read-only use carries less risk than writing; judge for yourself.
 
 点击“扫码连接 B站”，用 B站 App 扫描页面二维码，在手机上确认角色使用的账号。确认后自动保存登录态，无需寻找 Cookie。二维码过期可重新获取；扫码不会自动发评论或动态。
 

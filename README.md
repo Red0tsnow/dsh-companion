@@ -4,7 +4,7 @@
 
 > **这不是独立 App。** 它是 [DeepSeek Harness](https://github.com/deepseek-ai/dsh)（DSH）的**插件**——没有 DSH 就装不上、也跑不起来。它不是模型，不提供对话能力，用的是你自己 DSH 里已经配好的模型。
 
-当前版本 `0.6.2`，MIT 许可，源码与发行包都在本仓库。
+当前版本 `0.6.3`，MIT 许可，源码与发行包都在本仓库。
 
 ## 为什么用它
 
@@ -47,11 +47,23 @@
 
 **QQ / Bilibili account risks:** New secondary accounts, or accounts unused for years, may trigger risk checks, verification, or restrictions. This plugin has not been tested with accounts in long-term regular use. **Using your main account is not recommended.** Assess and accept the risks yourself; this plugin accepts no responsibility for resulting restrictions or other losses. Secondary QQ accounts may require periodic QR sign-in after security alerts; continued login validity is not guaranteed.
 
+**平台协议风险：** 用第三方客户端或自动化方式使用 QQ、B站、小黑盒，可能**违反这些平台的用户协议**。平台有权因此限制或封停账号——这是平台条款层面的风险，不是法律诉讼，但后果由你承担。插件只在你本机调用公开协议和你自己准备的工具，不绕过任何平台的安全机制，也不代替你做出这个决定。B站与小黑盒的自动化操作特别容易被判定为异常；请自行判断是否值得。
+
+**Platform terms:** Using third-party clients or automation with QQ, Bilibili or Heybox may **violate those platforms' terms of service**. They may restrict or ban the account as a result — that is a contractual risk rather than a legal claim, but the consequence is yours. The plugin only speaks public protocols from your own machine and invokes tools you provide; it does not bypass platform security or make this decision for you.
+
 - **Minecraft**：服务端 jar、Java、NapCat 都在你**明确确认**后从官方来源下载并校验；公开包里不含这些东西。角色身体第一次由包内模板生成到 `runtime/mc/mc-daemon.mjs`。
 - **QQ**：插件使用 [OneBot v11](https://github.com/botuniverse/onebot-11) 公开协议；不读取、不修改其他 QQ 插件，不接管宿主全局消息钩子。私聊默认只认你配的主人号。
 - **B站**：视频抽帧需要 **FFmpeg** 在 PATH 里或设置 `FFMPEG`；普通登录检测不需要。
 - **小黑盒**：契约是 `node <你的CLI> whoami --json`，stdout 只输出一个 JSON。工具必须支持 `DSH_COMPANION_CREDENTIALS` 环境变量才能用插件保存的凭据。
 - **可选媒体处理**：Python / Pillow 只用于额外的图片处理能力检测；缺失只影响对应功能，插件不会替你装。
+
+## 隐私
+
+**插件不上传任何数据**：没有账号服务器、没有遥测、没有崩溃上报。日记、记忆、人设、媒体和凭据都只存在你的数据目录里；凭据不出现在任何接口响应中。对外请求只发往硬编码白名单里的官方下载源，且每个都需要你明确确认。
+
+**你和角色的对话会发给你 DSH 里配置的模型服务方**——这是 DSH 的行为，不是插件记录的。生成内容由该模型与平台负责。
+
+完整清单（数据位置、请求目标、删除方式、你的责任）见 [隐私与数据](docs/privacy.md)。 / The plugin uploads nothing and has no telemetry; see [privacy](docs/privacy.md) for data locations, the outbound host allowlist and deletion.
 
 ## 明确的限制
 
@@ -62,7 +74,7 @@
 - 只在 **Windows** 上验证过；macOS / Linux 未验证。
 - **全新 Windows 用户的第一次安装没有实测**（只在开发机上装过）。
 - QQ 和 B站都**没有跑通真实账号的完整往返**：扫码之后的操作只测到本地协议端点。
-- 0.6.2 在 0.6.1 基础上加了账号风险提示（补齐安装说明、通道需求、限制），功能代码未变；功能层面仍**没做真实世界和真实唤醒的回归**，0.5.2 的历史证据不代表本版本已验收。
+- 0.6.3 在 0.6.1 基础上加了账号风险提示（补齐安装说明、通道需求、限制），功能代码未变；功能层面仍**没做真实世界和真实唤醒的回归**，0.5.2 的历史证据不代表本版本已验收。
 
 **功能边界**
 
@@ -86,10 +98,10 @@
 
 **A. 用发行包（推荐）**
 
-从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.6.2.tgz`，在已安装 DSH 的终端里：
+从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.6.3.tgz`，在已安装 DSH 的终端里：
 
 ```powershell
-dsh plugin --profile desktop add ./dsh-companion-0.6.2.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.6.3.tgz
 ```
 
 **B. 从源码自己打包**
@@ -100,7 +112,7 @@ npm run build
 npm test
 npm run check
 npm pack
-dsh plugin --profile desktop add ./dsh-companion-0.6.2.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.6.3.tgz
 ```
 
 装完**重启该 DSH profile**。插件入口在 DSH 设置里的「同居者 / Companion」。

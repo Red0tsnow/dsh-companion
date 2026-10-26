@@ -1,4 +1,4 @@
-dsh-companion 0.6.0
+dsh-companion 0.6.3
 Copyright (c) 2026 dsh-companion contributors
 Project license: MIT (see LICENSE).
 
@@ -51,7 +51,7 @@ NapCat execution requires a packaged version/hash anchor and explicit confirmati
 Only the reviewed portable Node entry point is run; installers and elevation
 helpers are never executed. An owned process-local bridge directs the native
 QQ data accessor to the character's dedicated profile without native setters.
-Paper/SkinsRestorer artifacts remain gated until client-visible acceptance.
+Paper and SkinsRestorer artifacts are downloaded only when the user selects Paper for the pinned 1.21.8 build, after client-visible acceptance was recorded.
 
 
 DSH, Minecraft, QQ, NapCat, Bilibili, and Heybox are names of their respective
@@ -65,3 +65,8 @@ functional requirements. No private persona, diary, account, or machine path
 was copied. The optional dsh-proactive integration uses registered tool names
 and the schedule-file protocol only; its implementation is neither imported
 nor distributed. It is maintained and installed independently.
+
+
+Privacy
+-------
+The plugin collects and uploads no data. Persona, diary, memory, media and credentials remain in the user data directory; credentials are never returned by an API. Outbound requests are limited to a hard-coded allowlist of official download hosts, each requiring explicit confirmation. See docs/privacy.md.
