@@ -4,7 +4,7 @@
 
 > **这不是独立 App。** 它是 [DeepSeek Harness](https://github.com/deepseek-ai/dsh)（DSH）的**插件**——没有 DSH 就装不上、也跑不起来。它不是模型，不提供对话能力，用的是你自己 DSH 里已经配好的模型。
 
-当前版本 `0.6.3`，MIT 许可，源码与发行包都在本仓库。
+当前版本 `0.6.4`，MIT 许可，源码与发行包都在本仓库。
 
 ## 为什么用它
 
@@ -74,7 +74,7 @@
 - 只在 **Windows** 上验证过；macOS / Linux 未验证。
 - **全新 Windows 用户的第一次安装没有实测**（只在开发机上装过）。
 - QQ 和 B站都**没有跑通真实账号的完整往返**：扫码之后的操作只测到本地协议端点。
-- 0.6.3 在 0.6.1 基础上加了账号风险提示（补齐安装说明、通道需求、限制），功能代码未变；功能层面仍**没做真实世界和真实唤醒的回归**，0.5.2 的历史证据不代表本版本已验收。
+- 0.6.4 在 0.6.1 基础上加了账号风险提示（补齐安装说明、通道需求、限制），功能代码未变；功能层面仍**没做真实世界和真实唤醒的回归**，0.5.2 的历史证据不代表本版本已验收。
 
 **功能边界**
 
@@ -98,10 +98,10 @@
 
 **A. 用发行包（推荐）**
 
-从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.6.3.tgz`，在已安装 DSH 的终端里：
+从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.6.4.tgz`，在已安装 DSH 的终端里：
 
 ```powershell
-dsh plugin --profile desktop add ./dsh-companion-0.6.3.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.6.4.tgz
 ```
 
 **B. 从源码自己打包**
@@ -112,7 +112,7 @@ npm run build
 npm test
 npm run check
 npm pack
-dsh plugin --profile desktop add ./dsh-companion-0.6.3.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.6.4.tgz
 ```
 
 装完**重启该 DSH profile**。插件入口在 DSH 设置里的「同居者 / Companion」。
@@ -120,6 +120,10 @@ dsh plugin --profile desktop add ./dsh-companion-0.6.3.tgz
 默认 profile 名是 `desktop`，用别的 profile 就替换掉。开发时也可以直接链源码目录：`dsh plugin --profile desktop add "link:<插件绝对路径>"`。
 
 ## 第一次使用
+
+**完全没接触过？** 看 [从零开始：第一次用](docs/first-run.md)——按面板上真实出现的按钮一步步写，包含"看到什么、点哪里"，以及卡住时该查哪个日志。
+
+下面是速览：
 
 1. 打开面板，填写角色名、关系、语气，编辑并保存人设。可载入空白模板或脱敏示例。
 2. 人设上限为规范化换行后的 **4000 个 UTF-16 单位**；通常汉字占 1，部分 emoji 占 2。界面和服务端均检查，超限不会保存或静默截断。
