@@ -1,5 +1,7 @@
 # 已知问题与支持边界
 
+- QQ、B站的新建小号或多年未使用的小号可能触发平台风控、验证或账号限制；QQ 小号可能因风险提醒需要定期重新扫码登录。本插件尚未在长期使用的账号上进行测试，不推荐使用主号。用户自行评估并承担使用风险，本插件不承担由此产生的账号限制或其他损失。 / New or long-unused secondary QQ/Bilibili accounts may trigger risk checks, verification or restrictions; QQ may require periodic QR sign-in. Accounts in long-term regular use have not been tested. Main accounts are not recommended. Use at your own risk; the plugin accepts no responsibility for resulting restrictions or other losses.
+
 - **0.6.0 本次按要求未跑功能测试、实际世界验收或 verify-release**。构建与包入口加载不能证明反射、挖矿、唤醒或私聊体验已验收；0.5.2 记录仅作历史证据。 / No functional or live acceptance suite was run for 0.6.0 at the user's request; build/load checks are not feature acceptance.
 - 自主循环、主动找你、日记分别 opt-in，额外依赖 dsh-proactive 0.3.1 的文件表工具。其未安装、未加载、被角色工具策略限制（含不允许直接调用的 PTC 模式）或缺少 schedule_file/jitter_seconds 时明确不可用；不会硬加载内部模块、改全局预算或自建随机计时器。需要用户配置提供方的模型额度及安静时段。 / Wake features are independent opt-ins using an optional provider; missing or restricted tools fail explicitly. Set the provider's own budget and quiet hours.
 - 意图层不保证复杂地形成功；2.5 秒无位置、背包总数、血量变化会判卡住，原地战斗或挖掘慢方块也可能被打断。目标消失不等于确认击杀；挖矿按指定物品的实际背包增量验收，掉落为其他物品时不会虚报成功。 / Complex terrain is not guaranteed. The strict progress fingerprint can interrupt stationary fighting or slow mining. Target disappearance is not a confirmed kill; differing drops do not satisfy a requested inventory item.

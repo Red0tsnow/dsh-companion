@@ -4,7 +4,7 @@
 
 > **这不是独立 App。** 它是 [DeepSeek Harness](https://github.com/deepseek-ai/dsh)（DSH）的**插件**——没有 DSH 就装不上、也跑不起来。它不是模型，不提供对话能力，用的是你自己 DSH 里已经配好的模型。
 
-当前版本 `0.6.1`，MIT 许可，源码与发行包都在本仓库。
+当前版本 `0.6.2`，MIT 许可，源码与发行包都在本仓库。
 
 ## 为什么用它
 
@@ -43,6 +43,10 @@
 
 ### 各通道的额外说明
 
+**QQ / B站账号风险提示：** 新建小号或多年未使用的小号可能触发平台风控、验证或账号限制。本插件尚未在长期使用的账号上进行测试，**不推荐使用主号**。请自行评估并承担使用风险；本插件不承担由此产生的账号限制或其他损失。QQ 小号还可能因风控或风险提醒，需要每隔一段时间重新扫码登录，不能保证登录态长期有效。
+
+**QQ / Bilibili account risks:** New secondary accounts, or accounts unused for years, may trigger risk checks, verification, or restrictions. This plugin has not been tested with accounts in long-term regular use. **Using your main account is not recommended.** Assess and accept the risks yourself; this plugin accepts no responsibility for resulting restrictions or other losses. Secondary QQ accounts may require periodic QR sign-in after security alerts; continued login validity is not guaranteed.
+
 - **Minecraft**：服务端 jar、Java、NapCat 都在你**明确确认**后从官方来源下载并校验；公开包里不含这些东西。角色身体第一次由包内模板生成到 `runtime/mc/mc-daemon.mjs`。
 - **QQ**：插件使用 [OneBot v11](https://github.com/botuniverse/onebot-11) 公开协议；不读取、不修改其他 QQ 插件，不接管宿主全局消息钩子。私聊默认只认你配的主人号。
 - **B站**：视频抽帧需要 **FFmpeg** 在 PATH 里或设置 `FFMPEG`；普通登录检测不需要。
@@ -58,7 +62,7 @@
 - 只在 **Windows** 上验证过；macOS / Linux 未验证。
 - **全新 Windows 用户的第一次安装没有实测**（只在开发机上装过）。
 - QQ 和 B站都**没有跑通真实账号的完整往返**：扫码之后的操作只测到本地协议端点。
-- 0.6.1 是对 0.6.0 的**文档与打包修正**（补齐安装说明、通道需求、限制），功能代码未变；功能层面仍**没做真实世界和真实唤醒的回归**，0.5.2 的历史证据不代表本版本已验收。
+- 0.6.2 在 0.6.1 基础上加了账号风险提示（补齐安装说明、通道需求、限制），功能代码未变；功能层面仍**没做真实世界和真实唤醒的回归**，0.5.2 的历史证据不代表本版本已验收。
 
 **功能边界**
 
@@ -82,10 +86,10 @@
 
 **A. 用发行包（推荐）**
 
-从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.6.1.tgz`，在已安装 DSH 的终端里：
+从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.6.2.tgz`，在已安装 DSH 的终端里：
 
 ```powershell
-dsh plugin --profile desktop add ./dsh-companion-0.6.1.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.6.2.tgz
 ```
 
 **B. 从源码自己打包**
@@ -96,7 +100,7 @@ npm run build
 npm test
 npm run check
 npm pack
-dsh plugin --profile desktop add ./dsh-companion-0.6.1.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.6.2.tgz
 ```
 
 装完**重启该 DSH profile**。插件入口在 DSH 设置里的「同居者 / Companion」。

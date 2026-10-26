@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const copy={
   zh:{
+    accountRiskTitle:'账号使用风险',
+    accountRisk:'QQ、B站的新建小号或多年未使用的小号可能触发平台风控、验证或账号限制。本插件尚未在长期使用的账号上进行测试，不推荐使用主号。请自行评估并承担使用风险；本插件不承担由此产生的账号限制或其他损失。',
+    qqReloginRisk:'QQ 小号可能因风控或风险提醒，需要每隔一段时间重新扫码登录；登录态无法保证长期有效。',
     mcStart:'开始一起玩',qqStart:'连接 QQ',biliStart:'扫码连接 B站',xhhStart:'查看接入方式',guide:'连接向导',
     mcTitle:'一起进入世界',mcIntro:'你已经有世界了吗？选择适合你的方式。',
     managed:'没有，帮我准备一个（推荐）',lan:'我自己开一个，对局域网开放',existing:'我已经有服务端目录',
@@ -35,6 +38,9 @@ const copy={
     qrAlt:'B站登录二维码',fetching:'正在获取登录二维码…',notConnected:'还没有连上。请确认助手中的角色 QQ 已登录，再重试。',
   },
   en:{
+    accountRiskTitle:'Account risks',
+    accountRisk:'New secondary QQ or Bilibili accounts, or accounts unused for years, may trigger platform risk checks, verification, or account restrictions. This plugin has not been tested with accounts in long-term regular use. Using your main account is not recommended. Assess and accept the risks yourself; this plugin accepts no responsibility for resulting account restrictions or other losses.',
+    qqReloginRisk:'Secondary QQ accounts may require periodic QR sign-in because of risk checks or security alerts. Continued login validity cannot be guaranteed.',
     mcStart:'Play together',qqStart:'Connect QQ',biliStart:'Connect Bilibili',xhhStart:'Connection requirements',guide:'Connection guide',
     mcTitle:'Enter a world together',mcIntro:'Do you already have a world? Choose how to connect.',
     managed:'Prepare a new world (recommended)',lan:'Open my singleplayer world to LAN',existing:'Use an existing server folder',
@@ -99,6 +105,7 @@ export function SetupFlow({id,lang,request,onComplete,ownerId='',selfId='',onlin
   const begin=()=>{setOpen(true);if(id==='bili'&&!login)newCode();};
   const title=t[`${id}Title`],progress=state?.total>0?Math.min(100,Math.round(state.bytes/state.total*100)):null;
   return <div className="dsc-setup">
+    {['qq','bili'].includes(id)&&<aside className="dsc-message" aria-label={t.accountRiskTitle}><strong>{t.accountRiskTitle}</strong><p>{t.accountRisk}</p>{id==='qq'&&<p>{t.qqReloginRisk}</p>}</aside>}
     {!open?<button className={`${configured?'':'primary '}dsc-start`} onClick={begin}>{configured?t.guide:t[`${id}Start`]}</button>:<>
       <div className="dsc-guide-head"><h4>{title}</h4><button className="small" onClick={()=>setOpen(false)}>{t.close}</button></div>
       {id!=='mc'&&<p className="dsc-guide-copy">{t[`${id}Intro`]}</p>}
