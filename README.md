@@ -164,6 +164,16 @@ node tools/migrate.mjs --source "<旧DSH数据目录>" --target "<新角色数�
 
 仅在确实需要复制凭据时添加 `--credentials`。原件保留、目标已有文件保留，旧会话日志不自动搬运。迁入闹钟默认停用，需检查路径、时区与目标后再启用。完整说明见 [迁移与回滚](docs/migration.md)。
 
+**备份**：数据全在这一个目录里——`workspace`（人设、日记、记忆、便签、技能、地点）、`runtime`（运行中的身体与日志）、`schedules`、`secrets.json` 和各通道凭据。磁盘坏了、系统重装或误删，就一起没了；没有云端，也没有第二份。备份就是把整个目录复制走（含凭据，放在自己的加密盘或私有位置）：
+
+```powershell
+# 先退出 DSH（或至少停掉身体和世界），避免复制到写了一半的文件
+$data = "$env:USERPROFILE\.dsh\companion"    # 改过 DSH_COMPANION_HOME/dataDir 就换成实际路径
+Copy-Item $data "$env:USERPROFILE\Backup\companion-$(Get-Date -Format yyyyMMdd-HHmm)" -Recurse
+```
+
+恢复：退出 DSH，把备份目录放回原路径（目录名仍是 `companion`），再启动。升级前、换机器前各备份一次。
+
 升级：备份数据目录，安装新版包并重启 DSH。运行中的身体位于 `runtime/mc`，角色自行修改的身体不会被新版模板静默覆盖。
 
 卸载：`dsh plugin --profile desktop remove dsh-companion`，然后重启该 profile。卸载保留角色数据；Minecraft 世界请先在面板显式关闭。回滚时安装保留的旧版 `.tgz`，必要时恢复自己备份的数据目录。

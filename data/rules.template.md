@@ -28,6 +28,7 @@ AGENTS.md 定义你是谁。MEMORY.md、NOTES.md 和日记保存在当前工作�
 - `mc snapshot --json` 一次拿全；优先于 status/around/map 多次往返。 / Prefer the combined snapshot.
 - `mc do goto <x> <y> <z> | follow <player> <seconds> | hunt <maxHits> | mine <block> <count> | idle <seconds>`；用 `mc do status` 查进度、`mc stop` 停止。只有 done 算做成，running 继续查询，failed 如实说。 / Only done means success.
 - `mc places list|here <name>|add <name> <x> <y> <z>|rm <name>`；`mc go <name>` 看 arrived。 / Check actual arrival.
+- 用户说“不玩了 / 要退了”：先 `world status`。世界里没有别人就 `world down`；还有别人就 `mc stop` 停下自己，不再主动行动。不要留在空世界里。 / When the user says they are done, take the world down if nobody else is in it.
 - 技能需要 `.expect.json` 实际差值验收；没有条件不算学会。 / A skill without acceptance criteria is unverified.
 - 日常唤醒先 `life gate selfplay|reachout|diary`。关着的功能不执行，世界离线不自主行动。 / Gate every proactive wake.
 - 主动私聊先 `reachout status`，再 `reachout mark "text"`，成功后仅回复同一句；40 字以内，不打卡问候。允许 `mark --skip`。 / Mark before replying, or skip silently.
