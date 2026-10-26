@@ -1,6 +1,6 @@
 {
   "name": "dsh-companion",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "鲸屋：给 DSH 中的角色一个独立工作区，人设、日记、长期记忆，可选接入 Minecraft、QQ、B站与自备小黑盒工具 / Whale House: a persistent room for a DSH character with optional Minecraft, QQ, Heybox and Bilibili channels.",
   "type": "module",
   "main": "lib/index.js",

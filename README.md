@@ -4,7 +4,7 @@
 
 > **这不是独立 App。** 它是 [DeepSeek Harness](https://github.com/deepseek-ai/dsh)（DSH）的**插件**——没有 DSH 就装不上、也跑不起来。它不是模型，不提供对话能力，用的是你自己 DSH 里已经配好的模型。
 
-当前版本 `0.7.2`，MIT 许可，源码与发行包都在本仓库。
+当前版本 `0.7.3`，MIT 许可，源码与发行包都在本仓库。
 
 ## 为什么用它
 
@@ -72,9 +72,10 @@
 **平台与验收**
 
 - 只在 **Windows** 上验证过；macOS / Linux 未验证。
-- **全新 Windows 用户的第一次安装没有实测**（只在开发机上装过）。
-- QQ 和 B站都**没有跑通真实账号的完整往返**：扫码之后的操作只测到本地协议端点。
-- 0.7.2 在 0.6.1 基础上加了账号风险提示（补齐安装说明、通道需求、限制），功能代码未变；功能层面仍**没做真实世界和真实唤醒的回归**，0.5.2 的历史证据不代表本版本已验收。
+- **首次安装有过一次真实用户验证（2026-10-26）**：一位完全没有 Node 基础的 Windows 用户，按说明让 DSH 完成安装，并接好了 Minecraft 与 QQ，没有卡住。
+- **B站仍未验证**：那次验证的对方没有小号，扫码之后的真实往返没跑过。
+- QQ 验证到「能连上、能往返」，**长期稳定性（掉线重连、多久要重新扫码）没有验证**。
+- 这是一次验证，不是长期回归。0.6.0 之后加的功能（自主循环、三类回顾、空世界自动关）**还没有经过真实唤醒的验证**。
 
 **功能边界**
 
@@ -98,10 +99,10 @@
 
 **A. 用发行包（推荐）**
 
-从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.7.2.tgz`，在已安装 DSH 的终端里：
+从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.7.3.tgz`，在已安装 DSH 的终端里：
 
 ```powershell
-dsh plugin --profile desktop add ./dsh-companion-0.7.2.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.7.3.tgz
 ```
 
 **B. 从源码自己打包**
@@ -112,7 +113,7 @@ npm run build
 npm test
 npm run check
 npm pack
-dsh plugin --profile desktop add ./dsh-companion-0.7.2.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.7.3.tgz
 ```
 
 装完**重启该 DSH profile**。插件入口在 DSH 设置里的「鲸屋 / Whale House」。
