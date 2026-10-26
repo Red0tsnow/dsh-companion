@@ -4,7 +4,7 @@
 
 本节是新功能的使用说明，未做实际世界或唤醒验收。 / These are usage instructions, not a claim of live-world or wake acceptance.
 
-**新安装**会复制新版身体。**旧版本升级**会保留当前身体；先正常让身体离开世界，再在角色对话中要求它执行 `node companion.mjs body prepare-update`、`body diff`。确认需要保留的自改内容后，使用已有的 `body test`、`body apply` 流程安装新版；失败可 `body rollback`。`prepare-update` 遇到已有待编辑副本会拒绝覆盖。 / Fresh installations receive the new body. Upgrades preserve the editable runtime body. Prepare an update, review the diff and preserve your changes, then use the existing trial/apply/rollback flow. An existing pending edit is never overwritten.
+**新安装**会复制新版身体。**旧版本升级**分两种：没改过的身体（跟历史发行版一字不差）会**自动**换成新版，换之前先在 `runtime/mc/body-backups/` 留一份备份；改过的身体**一个字都不动**，只留一份 `runtime/mc/BODY-UPGRADE.md` 说明，想升级就按下面的流程自己走——先正常让身体离开世界，再在角色对话中要求它执行 `node companion.mjs body prepare-update`、`body diff`。确认需要保留的自改内容后，使用已有的 `body test`、`body apply` 流程安装新版；失败可 `body rollback`。`prepare-update` 遇到已有待编辑副本会拒绝覆盖。 / Fresh installations receive the new body. Upgrades work in two ways: an untouched body (byte-identical to an earlier release) is replaced automatically, with a backup written first; a body the user edited is never touched — a `runtime/mc/BODY-UPGRADE.md` note explains how to update it through the existing prepare-update / diff / test / apply flow.
 
 在角色工作区运行以下命令，也可以直接让角色代为使用。 / Run from the character workspace, or ask the character to use them.
 
