@@ -1,5 +1,7 @@
 # dsh-companion · 鲸屋
 
+<img src="docs/cover.jpg" alt="鲸屋 / Whale House" width="100%">
+
 给 DSH 中的角色一个独立工作区：保存人设、日记和长期记忆，按需接入 Minecraft、QQ、B站与自备的小黑盒工具。只配置人设即可开始 DSH 对话，其余通道可以一直留空。
 
 > **这不是独立 App。** 它是 [DeepSeek Harness](https://github.com/deepseek-ai/dsh)（DSH）的**插件**——没有 DSH 就装不上、也跑不起来。它不是模型，不提供对话能力，用的是你自己 DSH 里已经配好的模型。
