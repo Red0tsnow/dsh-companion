@@ -2,7 +2,7 @@
 
 给 DSH 中的角色一个独立工作区：保存人设、日记和长期记忆，按需接入 Minecraft、QQ、B站与自备的小黑盒工具。只配置人设即可开始 DSH 对话，其余通道可以一直留空。
 
-首个验证平台为 Windows；需要 DSH 持续运行及宿主中可用的模型。当前版本为 `0.5.2`，支持版本选择、三种世界来源和已验证版本的 Paper 皮肤操作。先确认 DSH 自己能正常聊天（随便发一句，有回复就行）。插件用宿主已有的模型，不需要另外填 key。版本边界见 [0.5.2 记录](docs/verification-0.5.2.md)。
+首个验证平台为 Windows；需要 DSH 持续运行及宿主中可用的模型。当前版本为 `0.6.0`，加入身体分层与陪伴日常，保留版本选择、三种世界来源和 Paper 皮肤流程。先确认 DSH 自己能正常聊天。插件用宿主已有的模型，不需要另外填 key。本次按要求不跑功能回归，只检查构建和包加载；0.5.2 历史证据不代表本版本已验收。
 
 ## 安装
 
@@ -19,7 +19,7 @@ npm pack
 在已安装 DSH 的终端中安装生成的包，并重启该 DSH profile：
 
 ```powershell
-dsh plugin --profile desktop add ./dsh-companion-0.5.2.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.6.0.tgz
 ```
 
 开发时也可安装本地目录：`dsh plugin --profile desktop add "link:<插件源码绝对路径>"`。默认 profile 名为 `desktop`；使用其他 profile 时替换该名称。插件入口位于 DSH 设置中的“同居者 / Companion”。
@@ -44,6 +44,16 @@ dsh plugin --profile desktop add ./dsh-companion-0.5.2.tgz
 QQ 只接受配置的主人私聊；群聊可在高级设置中填写允许的群号并 @ 角色。WS token 与 Cookie 在独立凭据文件中保存，读取配置只返回“是否已设置”。新手步骤见 [连接向导](docs/onboarding.md)，高级配置与故障说明见 [使用指南](docs/usage.md)。
 
 外部组件在用户明确确认后从官方来源下载并校验；运行副本与安装包分开。NapCat 固定版本与哈希，解压后运行官方便携版，运行前需要你确认版本与哈希；版本对不上就拒绝下载，等待插件更新。公开包不含 Java、Minecraft jar、NapCat、QQ 或小黑盒签名实现。
+
+## 角色的新能力 / Character capabilities
+
+| 能力 / Capability | 使用方式与边界 / Use and limits |
+|---|---|
+| **会自己接着做**（可关） / Keep going independently (optional) | Minecraft 身体在线且空闲时接着做一小步，连续最多十次；默认关闭 / Online, idle world only; up to ten consecutive wakes; off by default |
+| **会主动找你**（独立开关，一天一条） / Think of you (independent switch, once daily) | 随机窗口、40 字以内；普通角色私聊，允许安静跳过 / Random window, at most 40 characters in the ordinary private conversation; silence is allowed |
+| **会写自己的日记**（一天一段，必须新起日期） / A personal diary (one newly dated entry daily) | 工具自动添加日期和账本，连续三天没写会提示 / Tool-managed headings and ledger, with a notice after three empty days |
+
+日常唤醒依赖**可选**的 `dsh-proactive@0.3.1` 文件表工具；不随包安装，也不改它的额度或安静时段。缺少能力会明示不可用，核心对话照常使用。身体还提供 `mc snapshot`、后台 `mc do`、`mc places` 和技能结果验收。完整步骤见 [连接与日常使用](docs/onboarding.md)。 / Wake features need the optional dsh-proactive 0.3.1 schedule-file tools. The provider is neither bundled nor reconfigured. Snapshot, background intents, named places and skill acceptance are also available.
 
 ## 数据、迁移和升级
 

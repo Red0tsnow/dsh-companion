@@ -18,7 +18,8 @@ async function trial() {
   finally { await stop(CONFIG.mc.testPort); }
 }
 try {
-  if (cmd === 'edit') { await fs.copyFile(body, next, fs.constants.COPYFILE_EXCL).catch(e => { if (e.code !== 'EEXIST') throw e; }); console.log(next); }
+  if (cmd === 'prepare-update') { await fs.copyFile(path.join(P.templates,'mc-daemon.mjs'),next,fs.constants.COPYFILE_EXCL); console.log('新版身体已准备，请检查差异后应用 / New body prepared; review body diff before body apply'); }
+  else if (cmd === 'edit') { await fs.copyFile(body, next, fs.constants.COPYFILE_EXCL).catch(e => { if (e.code !== 'EEXIST') throw e; }); console.log(next); }
   else if (cmd === 'diff') { const [a, b] = await Promise.all([fs.readFile(body, 'utf8'), fs.readFile(next, 'utf8')]); const aa = a.split('\n'), bb = b.split('\n'); for (let i = 0; i < Math.max(aa.length, bb.length); i++) if (aa[i] !== bb[i]) console.log(`${i + 1}: - ${aa[i] || ''}\n${i + 1}: + ${bb[i] || ''}`); }
   else if (cmd === 'test') { await trial(); console.log('Trial passed'); }
   else if (cmd === 'backups') console.log((await fs.readdir(backups)).join('\n'));
@@ -34,5 +35,5 @@ try {
     catch (e) { await stop(CONFIG.mc.commandPort); await fs.copyFile(previous, body); if (wasRunning) await startBody(ROOT, CONFIG); throw new Error('Restored previous body: ' + e.message); }
     console.log('Body ' + cmd + ' complete; backup: ' + path.basename(previous));
   });
-  else console.log('body edit|diff|test|apply|rollback|backups');
+  else console.log('body prepare-update|edit|diff|test|apply|rollback|backups');
 } catch (e) { console.error(e.message); process.exitCode = 1; }

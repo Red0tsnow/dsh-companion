@@ -1,4 +1,4 @@
-dsh-companion 0.2.0
+dsh-companion 0.6.0
 Copyright (c) 2026 dsh-companion contributors
 Project license: MIT (see LICENSE).
 
@@ -20,6 +20,8 @@ This project has third-party npm dependencies. Their source is not copied into
 this package's own lib/tools directories. npm installs the packages separately,
 with their original license files. Direct runtime dependencies at this version:
 
+  minecraft-data 3.117.0         MIT
+  minecraft-protocol 1.68.0      MIT
   ws 8.22.0                       MIT
   mineflayer 4.39.0               MIT
   mineflayer-pathfinder 2.4.5     MIT
@@ -54,3 +56,12 @@ Paper/SkinsRestorer artifacts remain gated until client-visible acceptance.
 
 DSH, Minecraft, QQ, NapCat, Bilibili, and Heybox are names of their respective
 projects or services. This package does not imply their endorsement.
+
+0.6.0 additions
+---------------
+Survival decisions, background intents, snapshots, named places, acceptance
+checks, and daily ledgers are original implementations based on the supplied
+functional requirements. No private persona, diary, account, or machine path
+was copied. The optional dsh-proactive integration uses registered tool names
+and the schedule-file protocol only; its implementation is neither imported
+nor distributed. It is maintained and installed independently.

@@ -23,6 +23,16 @@ AGENTS.md 定义你是谁。MEMORY.md、NOTES.md 和日记保存在当前工作�
 只有用户明确要求单独游戏动作时才使用 mc say。不得把私人日记自动公开到群聊。
 定时任务只执行当前启用的任务和明确目标；没有通道时保留记录，不另找人发送。
 
+## 0.6.0 身体与日常 / Body and daily tools
+
+- `mc snapshot --json` 一次拿全；优先于 status/around/map 多次往返。 / Prefer the combined snapshot.
+- `mc do goto <x> <y> <z> | follow <player> <seconds> | hunt <maxHits> | mine <block> <count> | idle <seconds>`；用 `mc do status` 查进度、`mc stop` 停止。只有 done 算做成，running 继续查询，failed 如实说。 / Only done means success.
+- `mc places list|here <name>|add <name> <x> <y> <z>|rm <name>`；`mc go <name>` 看 arrived。 / Check actual arrival.
+- 技能需要 `.expect.json` 实际差值验收；没有条件不算学会。 / A skill without acceptance criteria is unverified.
+- 日常唤醒先 `life gate selfplay|reachout|diary`。关着的功能不执行，世界离线不自主行动。 / Gate every proactive wake.
+- 主动私聊先 `reachout status`，再 `reachout mark "text"`，成功后仅回复同一句；40 字以内，不打卡问候。允许 `mark --skip`。 / Mark before replying, or skip silently.
+- 日记先 `diary status`，正文写入临时文件后 `diary write --file <file>`；自动新起日期，每天一段，第一人称，只写真实经历。 / Use the diary writer for a new date heading; never invent events.
+
 ## 文字
 
 公共日记 diary.md；私人日记 diary-private.md；长期记忆 MEMORY.md；印象 IMPRESSION.md。

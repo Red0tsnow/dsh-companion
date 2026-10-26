@@ -1,5 +1,56 @@
 # 新手连接向导
 
+## 0.6.0 身体与陪伴日常 / Body and daily companionship
+
+本节是新功能的使用说明，未做实际世界或唤醒验收。 / These are usage instructions, not a claim of live-world or wake acceptance.
+
+**新安装**会复制新版身体。**旧版本升级**会保留当前身体；先正常让身体离开世界，再在角色对话中要求它执行 `node companion.mjs body prepare-update`、`body diff`。确认需要保留的自改内容后，使用已有的 `body test`、`body apply` 流程安装新版；失败可 `body rollback`。`prepare-update` 遇到已有待编辑副本会拒绝覆盖。 / Fresh installations receive the new body. Upgrades preserve the editable runtime body. Prepare an update, review the diff and preserve your changes, then use the existing trial/apply/rollback flow. An existing pending edit is never overwritten.
+
+在角色工作区运行以下命令，也可以直接让角色代为使用。 / Run from the character workspace, or ask the character to use them.
+
+```text
+node companion.mjs mc snapshot --json
+node companion.mjs mc do goto 12 65 30
+node companion.mjs mc do follow Player 30
+node companion.mjs mc do hunt 20
+node companion.mjs mc do mine oak_log 3
+node companion.mjs mc do idle 20
+node companion.mjs mc do status
+node companion.mjs mc stop
+```
+
+`snapshot` 一次读取位置、维度、朝向、血量、饥饿、昼夜、脚下三层、四向障碍、敌对生物、地点、背包和任务。`do` 默认最多等待 8 秒，随后返回 `running` 时任务仍在身体里执行；用 `do status` 查询。只有 `state:done` 才完成，`failed` 和 `running` 都不能声称成功。`--wait 0` 立即返回；卡住、断线、低血撤退或停止会明确失败。 / Snapshot combines perception and task state. Intents wait up to eight seconds by default, then continue in the background. Poll status; only `done` means success. Stuck, offline, retreat and cancellation are failures.
+
+地点保存在角色数据根的 `places.json`，`spawn`、`death` 由新版身体自动记录。 / Named places live in the character data root; spawn and death are automatic.
+
+```text
+node companion.mjs mc places list
+node companion.mjs mc places here home
+node companion.mjs mc places add garden 12 65 30
+node companion.mjs mc go home
+node companion.mjs mc places rm garden
+```
+
+地点含维度，跨维度不会直接导航。`go` 没有真正到达就返回 `arrived:false`；身体离线时不冒报到达。 / Places include dimension; navigation cannot silently cross dimensions. An unfinished journey returns arrived:false.
+
+技能仍使用 `skills new/run/list/rm`，另在数据目录 `runtime/mc/skills/<name>.expect.json` 写验收目标，例如： / Skills use a separate acceptance file:
+
+```json
+{"inventoryDelta":{"oak_log":3},"movedAtLeast":5,"healthAtLeast":10}
+```
+
+运行前后拍快照，所有条件同时满足才显示 ✓。没有条件显示 ⚠ 未验收；空条件、脚本失败、运行结束时任务仍在执行或差值不足显示 ✗。结果保存在 `runtime/mc/skills-state.json`。 / All criteria must pass against before/after snapshots. Missing criteria are unverified; empty criteria, script failures, running tasks and unmet changes fail.
+
+面板的“陪伴日常”有三个独立开关。默认全关，不会偷偷使用额度。安装并启用 **dsh-proactive 0.3.1** 后，保存想启用的开关；它使用同一个角色会话的已注册工具，创建单文件句柄，文件原子写入数据根 `proactive/`。实际 `declaredEntries` 对上才显示接入完成。缺插件、工具受限或宿主接口不同会显示原因。请在 dsh-proactive 自己的面板设置每天额度、时区和安静时段。 / Three independent switches are off by default. Enable the optional provider, then save your choices. Registration and declared-entry counts determine actual status. Configure the provider's budget and quiet hours separately.
+
+- **自己接着做**：只在新版身体在线、没有任务时生成世界唤醒；默认无人指令 180 秒、任务结束 60 秒、冷却 120 秒，连续最多十次；人的新指令重置连续次数。关世界就撤销对应文件订阅。 / Self-play is world-only, with idle/completion gates, cooldown and a ten-wake cap reset by human activity.
+- **主动找你**：默认窗口从 10:00 开始，之后 13 小时内随机；修改为适合自己的时间，窗口不能跨天。随机延迟由提供方的 `cron + jitter_seconds` 计算，不另设随机定时器。落在普通 DSH 角色私聊，不作为世界事件，也不自动转发 QQ。 / Reach-out uses provider-owned cron plus jitter, in a same-day window. Replies stay in the ordinary DSH private conversation, not Minecraft or automatic QQ forwarding.
+- **写日记**：默认 21:00，可改时间。与睡前一句独立；内容保存在 `workspace/diary.md`，账本 `workspace/diary.jsonl`。 / Diary time is configurable and independent of bedtime lines.
+
+日常工具：`reachout status|show`；`reachout mark "一句话"` 在回复前记账，`--skip` 安静跳过。同一天第二次 mark 退出码 3。40 字、禁用打卡问候由工具检查。`diary write --file <正文文本文件>` 自动新起 `## MM-DD`；正文 3–6 行，平淡一天允许一行实话。`diary skip` 记录今天不想写。文件与账本已有当天记录时拒绝再加一段，不用“补”接旧段落。 / Daily tools enforce one record per day, validate reach-out text and add new diary date headings. Duplicate operations exit with code 3. Skip is explicit and also counts as the day's decision.
+
+关闭开关会删除相应文件并取消本插件句柄；卸载也清理订阅，保留日记和其他角色数据。不会修改用户原有的其他闹钟。 / Disabling or unloading withdraws the plugin's schedule files and handles while retaining character data and unrelated alarms.
+
 先确认 DSH 自己能正常聊天（随便发一句，有回复就行）。插件用宿主已有的模型，不需要另外填 key。再保存人设，点击“打开角色对话”。面板显示“宿主模型：可用 / 未配置 / 未知”，打开前重新检查：明确未配置时引导到设置登录；没有足够证据时显示未知。
 
 ## 我的世界

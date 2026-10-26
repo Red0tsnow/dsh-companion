@@ -11,7 +11,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { createRequire } from 'node:module'
 
-import { require, ROOT, P, CONFIG, SECRETS, discoverLan } from './bridge.mjs'
+import { require, ROOT, P, CONFIG, SECRETS, discoverLan, createBodyCapabilities } from './bridge.mjs'
 const mineflayer = require('mineflayer')
 const { pathfinder, Movements, goals } = require('mineflayer-pathfinder')
 const { plugin: collectBlock } = require('mineflayer-collectblock')
@@ -55,8 +55,11 @@ const state = {
   lastError: null,
   joinedAt: null,
 }
+let capabilities
+let connectionGeneration=0
 
 function makeBot(host = MC_HOST, port = MC_PORT) {
+  const generation=++connectionGeneration
   const bot = mineflayer.createBot({
     host,
     port,
@@ -90,9 +93,11 @@ function makeBot(host = MC_HOST, port = MC_PORT) {
       bot.autoEatBusy = false
     }
   }
-  setInterval(() => { autoEat().catch(() => {}) }, 6000)
+  const eatingTimer = setInterval(() => { autoEat().catch(() => {}) }, 6000)
+  bot.once('end', () => clearInterval(eatingTimer))
 
   state.bot = bot
+  capabilities.attach(bot)
 
   bot.once('spawn', () => {
     state.online = true
@@ -126,11 +131,12 @@ function makeBot(host = MC_HOST, port = MC_PORT) {
   })
 
   bot.on('end', (reason) => {
+    if (generation!==connectionGeneration) return
     state.online = false
     state.target = { host, port }
     log(`掉线：${reason}，5 秒后重连（${host}:${port}）`)
     // 重连回**上次连的那个服**，不是默认那个：她可能刚被 join 到局域网房间里
-    setTimeout(() => { if (!state.online) makeBot(host, port) }, 5000)
+    setTimeout(() => { if (!state.online && generation===connectionGeneration) makeBot(host, port) }, 5000)
   })
 
   bot.on('error', (e) => {
@@ -158,7 +164,7 @@ const pos = (v) => v ? [Math.round(v.x * 10) / 10, Math.round(v.y * 10) / 10, Ma
 
 function status() {
   const b = state.bot
-  if (!b || !state.online) return { ok: false, online: false, error: state.lastError || '没连上' }
+  if (!b || !state.online) return { ok: false, online: false, error: state.lastError || '身体离线 / Body offline', ...capabilities?.status() }
   const inv = {}
   for (const item of b.inventory.items()) inv[item.name] = (inv[item.name] || 0) + item.count
   return {
@@ -175,6 +181,7 @@ function status() {
     inventory: inv,
     heldItem: b.heldItem?.name ?? null,
     joinedAt: state.joinedAt,
+    ...capabilities?.status(),
   }
 }
 
@@ -193,7 +200,7 @@ const handleRequest = async (req, res) => {
   if (req.headers.authorization !== 'Bearer ' + SECRETS.bodyToken || req.headers.origin) { json(res, 403, { ok: false, error: 'Unauthorized' }); return }
   const url = new URL(req.url, `http://${HOST}:${PORT}`)
   const b = state.bot
-  if (req.method === 'POST' && url.pathname === '/shutdown') { json(res, 200, { ok: true }); try { b?.quit() } catch {} setTimeout(() => process.exit(0), 300); return }
+  if (req.method === 'POST' && url.pathname === '/shutdown') { capabilities.close(); json(res, 200, { ok: true }); try { b?.quit() } catch {} setTimeout(() => process.exit(0), 300); return }
 
   if (req.method === 'GET' && url.pathname === '/status') { json(res, 200, { ...status(), companionRoot: ROOT.replaceAll('\\', '/').toLowerCase(), pid: process.pid }); return }
 
@@ -216,9 +223,14 @@ const handleRequest = async (req, res) => {
   }
 
   const data = req.method === 'POST' ? await readBody(req) : {}
+  const extended = await capabilities.handle(req.method, url, data)
+  if (extended !== null) { json(res, 200, extended); return }
+  if (req.method === 'POST' && !['/shutdown'].includes(url.pathname)) capabilities.touch()
   if (req.method === 'POST' && url.pathname === '/connect') {
     const host = String(data.host || '127.0.0.1')
     const port = Number(data.port || CONFIG.mc.port)
+    connectionGeneration++
+    capabilities.tasks.cancel('正在切换连接 / Switching connection')
     try { b?.quit() } catch {}
     state.online = false
     setTimeout(() => makeBot(host, port), 1200)
@@ -400,6 +412,8 @@ const handleRequest = async (req, res) => {
     return
   }
   if (url.pathname === '/rejoin') {
+    connectionGeneration++
+    capabilities.tasks.cancel('正在重连 / Reconnecting')
     try { b?.quit() } catch {}
     state.online = false
     setTimeout(makeBot, 1500)
@@ -409,6 +423,11 @@ const handleRequest = async (req, res) => {
 
   if (req.method !== 'POST') { json(res, 404, { ok: false, error: 'not found' }); return }
   if (!state.online) { json(res, 503, { ok: false, error: '不在线' }); return }
+
+  if (url.pathname === '/stop') { const task=capabilities.stop(); json(res,200,{ok:true,task}); return }
+  if (['/goto','/follow','/mine','/hunt'].includes(url.pathname)) { json(res,200,await capabilities.doTask({...data,intent:url.pathname.slice(1)})); return }
+  // A direct legacy action owns the controls until it returns; do not let an intent fight it.
+  if (capabilities.tasks.status().state==='running' && url.pathname!=='/say') { json(res,409,{ok:false,error:'请先停止当前任务 / Stop the running task first'}); return }
 
 
   if (READONLY && ['/mine', '/place', '/craft', '/eat', '/toss', '/attack', '/hunt', '/dig', '/activate', '/use', '/equip'].includes(url.pathname)) {
@@ -424,54 +443,12 @@ const handleRequest = async (req, res) => {
     return
   }
 
-  if (url.pathname === '/goto') {
-    const { x, y, z } = data
-    if ([x, y, z].some((v) => typeof v !== 'number')) { json(res, 400, { ok: false, error: '要 x y z' }); return }
-    b.pathfinder.setGoal(new goals.GoalBlock(Math.floor(x), Math.floor(y), Math.floor(z)))
-    json(res, 200, { ok: true, goal: [x, y, z] })
-    return
-  }
-
   if (url.pathname === '/come') {
     const name = String(data.player ?? '')
     const target = b.players[name]?.entity
     if (!target) { json(res, 404, { ok: false, error: `看不到 ${name}` }); return }
     b.pathfinder.setGoal(new goals.GoalFollow(target, 2), true)
     json(res, 200, { ok: true, following: name })
-    return
-  }
-
-  if (url.pathname === '/follow') {
-    const name = String(data.player ?? '')
-    const target = b.players[name]?.entity
-    if (!target) { json(res, 404, { ok: false, error: `看不到 ${name}` }); return }
-    b.pathfinder.setGoal(new goals.GoalFollow(target, Number(data.distance ?? 3)), true)
-    json(res, 200, { ok: true, following: name })
-    return
-  }
-
-  if (url.pathname === '/mine') {
-    const blockName = String(data.block ?? '')
-    const count = Math.max(1, Math.min(64, Number(data.count ?? 1)))
-    const mcData = require('minecraft-data')(b.version)
-    const bt = mcData.blocksByName[blockName]
-    if (!bt) { json(res, 400, { ok: false, error: `没有这种方块：${blockName}` }); return }
-    const found = b.findBlocks({ matching: bt.id, maxDistance: 32, count })
-    if (!found.length) { json(res, 404, { ok: false, error: `周围 32 格没有 ${blockName}` }); return }
-    let dug = 0
-    const failed = []
-    for (const p of found) {
-      const target = b.blockAt(p)
-      if (!target) continue
-      try {
-        // dig 只会把方块打掉，掉落物还躺在地上；collect 会顺手走过去捡起来
-        await b.collectBlock.collect(target, { ignoreNoPath: true })
-        dug++
-      } catch (e) {
-        failed.push(String(e.message || e).slice(0, 60))
-      }
-    }
-    json(res, 200, { ok: true, block: blockName, dug, total: found.length, failed: failed.slice(0, 3) })
     return
   }
 
@@ -691,76 +668,6 @@ const handleRequest = async (req, res) => {
     }
     return
   }
-  if (url.pathname === '/hunt') {
-    // 2026-10-25：她打一架要来回十几次（找怪→走过去→打→再看），一轮就是几分钟。
-    // 把这套循环放进身体里，一次调用干完，只回一个结果。省的是她的思考次数，不是代码。
-    const mcData3 = require('minecraft-data')(b.version)
-    const hostileOf = (e) => {
-      if (!e || e === b.entity || !e.position) return false
-      const info = mcData3.entitiesByName[e.name]
-      return Boolean(info) && (info.type === 'hostile' || info.category === 'Hostile mobs')
-    }
-    const distTo = (e) => e.position.distanceTo(b.entity.position)
-    const nearest = () => Object.values(b.entities).filter(hostileOf).sort((x, y) => distTo(x) - distTo(y))[0]
-    const reach = Number(data.reach ?? 24)
-    const maxHit = Math.max(1, Math.min(120, Number(data.hits ?? 40)))
-
-    let target = nearest()
-    if (!target || distTo(target) > reach) {
-      // 没怪就原地等十几秒（站在暗处会刷），不消耗她的回合
-      const waitMs = Math.min(30000, Math.max(0, Number(data.waitSec ?? 0) * 1000))
-      if (waitMs > 0) {
-        const until = Date.now() + waitMs
-        while (Date.now() < until && !target) {
-          await new Promise((r) => setTimeout(r, 1000))
-          target = nearest()
-          if (target && distTo(target) <= reach) break
-        }
-      }
-    }
-    if (!target) { json(res, 404, { ok: true, found: false, health: Math.round(b.health), message: '附近没有敌对生物' }); return }
-
-    const name = target.name
-    let hits = 0
-    let fled = false
-    try {
-      for (let i = 0; i < maxHit; i++) {
-        const mob = b.entities[target.id]
-        if (!mob || !mob.isValid) break
-        if (b.health <= 8) { fled = true; break }
-        const d = distTo(mob)
-        if (d > 3) {
-          // 走近：给寻路 15 秒，别每 300ms 重设一次目标（那样永远走不到）
-          b.pathfinder.setGoal(new goals.GoalNear(mob.position.x, mob.position.y, mob.position.z, 2))
-          const until = Date.now() + 15000
-          let arrived = false
-          while (Date.now() < until) {
-            await new Promise((r) => setTimeout(r, 400))
-            const m2 = b.entities[target.id]
-            if (!m2 || !m2.isValid) break
-            if (distTo(m2) <= 3) { arrived = true; break }
-          }
-          b.pathfinder.setGoal(null)
-          if (!arrived) continue
-        }
-        b.pathfinder.setGoal(null)
-        try { await b.lookAt(mob.position.offset(0, (mob.height ?? 1.8) * 0.6, 0), true) } catch {}
-        await b.attack(mob)
-        hits++
-        await new Promise((r) => setTimeout(r, 600))
-      }
-      const killed = !(b.entities[target.id] && b.entities[target.id].isValid)
-      if (fled) {
-        // 血少就真跑：往反方向走 8 格，不是站着不动
-        const away = b.entity.position.offset(mobDirAway(target), 0, 0)
-        try { b.pathfinder.setGoal(new goals.GoalNear(b.entity.position.x + 8, b.entity.position.y, b.entity.position.z + 8, 2)) } catch {}
-      }
-      json(res, 200, { ok: true, found: true, target: name, hits, killed, fled, health: Math.round(b.health), food: Math.round(b.food) })
-    } catch (e) {
-      json(res, 500, { ok: false, error: String(e.message || e).slice(0, 200) })
-    }
-    return
-  }
   if (url.pathname === '/attack') {
     // 2026-10-25：和平模式用不上，可一旦她开难度，我总得能还手。
     // 逻辑照 /mine 来：先找目标，再靠近，最后一下一下打。
@@ -830,13 +737,6 @@ const handleRequest = async (req, res) => {
     return
   }
 
-  if (url.pathname === '/stop') {
-    b.pathfinder.setGoal(null)
-    b.clearControlStates()
-    json(res, 200, { ok: true })
-    return
-  }
-
   if (url.pathname === '/look') {
     const name = String(data.player ?? '')
     const target = name ? b.players[name]?.entity : null
@@ -852,13 +752,14 @@ const handleRequest = async (req, res) => {
 
   json(res, 404, { ok: false, error: 'not found' })
 }
-const server = http.createServer((req, res) => handleRequest(req, res).catch(() => { if (!res.headersSent) json(res, 500, { ok: false, error: 'Body action failed' }); else res.end(); }))
+const server = http.createServer((req, res) => handleRequest(req, res).catch(e => { if (!res.headersSent) json(res, 500, { ok: false, error: String(e.message || '身体操作失败 / Body action failed').slice(0,300) }); else res.end(); }))
 
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') { console.log('Command port already occupied: ' + PORT); process.exit(1) }
   throw e
 })
 
+capabilities = createBodyCapabilities({root:ROOT,getBot:()=>state.bot,online:()=>state.online,status,goals,mcData:version=>require('minecraft-data')(version),readOnly:READONLY,trial:process.env.COMPANION_TRIAL==='1'})
 makeBot()
 server.listen(PORT, HOST, () => {
   log(`命令口 http://${HOST}:${PORT}  ·  目标服务器 ${MC_HOST}:${MC_PORT}  ·  名字 ${MC_USER}`)

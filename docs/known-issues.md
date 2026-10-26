@@ -1,5 +1,12 @@
 # 已知问题与支持边界
 
+- **0.6.0 本次按要求未跑功能测试、实际世界验收或 verify-release**。构建与包入口加载不能证明反射、挖矿、唤醒或私聊体验已验收；0.5.2 记录仅作历史证据。 / No functional or live acceptance suite was run for 0.6.0 at the user's request; build/load checks are not feature acceptance.
+- 自主循环、主动找你、日记分别 opt-in，额外依赖 dsh-proactive 0.3.1 的文件表工具。其未安装、未加载、被角色工具策略限制（含不允许直接调用的 PTC 模式）或缺少 schedule_file/jitter_seconds 时明确不可用；不会硬加载内部模块、改全局预算或自建随机计时器。需要用户配置提供方的模型额度及安静时段。 / Wake features are independent opt-ins using an optional provider; missing or restricted tools fail explicitly. Set the provider's own budget and quiet hours.
+- 意图层不保证复杂地形成功；2.5 秒无位置、背包总数、血量变化会判卡住，原地战斗或挖掘慢方块也可能被打断。目标消失不等于确认击杀；挖矿按指定物品的实际背包增量验收，掉落为其他物品时不会虚报成功。 / Complex terrain is not guaranteed. The strict progress fingerprint can interrupt stationary fighting or slow mining. Target disappearance is not a confirmed kill; differing drops do not satisfy a requested inventory item.
+- 旧运行身体不会静默升级，需使用 prepare-update、差异检查和原有试用/应用流程；有自改时先合并。技能检查、快照和自主循环需要新版身体。 / Existing edited bodies require an explicit update/merge; new capabilities need the updated body.
+- 日常模板要求模型先 gate、再查账本、成功记账后才回复；它们是工具使用约定，不能阻止模型直接改文件或绕开约定发言。主动消息记录在尝试私聊前，异常中断当天不自动重发。日记不自动猜测事实；写作内容仍由模型负责。 / Prompts require gate/ledger discipline, not a sandbox against a model bypassing tools. Reach-out is recorded before replying and is not retried after an ambiguous interruption. Diary factuality remains the model's responsibility.
+- 日常账本使用跨进程锁；进程被外部结束时可能留下 `.lock`。确认没有写入进程后可备份数据并移除对应锁；不要在写入期间删除锁。日记写入被外部中断且不能确定文件状态时会拒绝继续并要求恢复，避免重复日期。 / A killed writer can leave a lock or interrupted diary transaction; recover only after confirming the writer has stopped.
+
 - 首发以 Windows 为验证目标；macOS、Linux 的受管 Minecraft 进程识别和生命周期尚未承诺支持。
 - DSH 公开服务接口会随宿主版本变化。开发基线为本机提取的 `0.2.1-rc.3` 接口，真实支持版本和结果见 [验证记录](verification.md)。
 - 独立面板预览不提供模型服务。真实对话依赖 DSH 已配置的可用模型。

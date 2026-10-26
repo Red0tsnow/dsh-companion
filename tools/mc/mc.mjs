@@ -57,6 +57,21 @@ if (!(await alive())) {
 }
 
 let out
+if (cmd === 'snapshot') {
+  const s=await get('/snapshot');console.log(rest.includes('--json')?JSON.stringify(s):JSON.stringify(s,null,2));process.exit(s.ok?0:1)
+}
+if (cmd === 'do') {
+  if(rest[0]==='status'){console.log(JSON.stringify(await get('/do/status')));process.exit(0)}
+  const [intent,...args]=rest
+  const params=intent==='goto'?{x:Number(args[0]),y:Number(args[1]),z:Number(args[2])}:intent==='follow'?{player:args[0],seconds:Number(args[1]??30)}:intent==='mine'?{block:args[0],count:Number(args[1]??1)}:intent==='hunt'?{maxHits:Number(args[0]??40)}:{seconds:Number(args[0]??30)}
+  const wi=rest.indexOf('--wait');const result=await post('/do',{intent,...params,...(wi>=0?{waitSec:Number(rest[wi+1])}:{})});console.log(JSON.stringify(result));process.exit(result.state==='failed'?1:0)
+}
+if(cmd==='go'){const r=await post('/go',{name:rest[0]});console.log(JSON.stringify(r));process.exit(r.state==='failed'?1:0)}
+if(cmd==='places'){
+  const [action='list',name,x,y,z]=rest
+  const r=action==='list'?await get('/places'):await post('/places',{action,name,...(action==='add'?{x:Number(x),y:Number(y),z:Number(z)}:{})})
+  console.log(JSON.stringify(r,null,2));process.exit(r.ok?0:1)
+}
 if (!cmd || cmd === 'status') {
   const s = await get('/status')
   if (!s.ok) { console.log('不在线：' + (s.error || '未知')); process.exit(1) }

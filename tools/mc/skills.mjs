@@ -12,6 +12,9 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { execFileSync } from 'node:child_process'
+import { evaluateSkill } from '../../lib/core/skill-expect.js'
+import { readJson, writeJson } from '../../lib/core/files.js'
+import { withFileLock } from '../../lib/core/data-lock.js'
 
 const DIR = path.join(P.mc, 'skills')
 const HELPER = path.join(DIR, '_helper.mjs')
@@ -41,8 +44,9 @@ const list = () => fs.readdirSync(DIR)
 
 if (!cmd || cmd === 'list') {
   const names = list()
+  const states=await readJson(path.join(P.mc,'skills-state.json'))
   console.log(`技能 ${names.length} 个：`)
-  for (const n of names) console.log('  ' + n)
+  for (const n of names) console.log('  ' + ({passed:'✓',failed:'✗',unverified:'⚠'}[states[n]?.status]||'⚠') + ' ' + n + ' · ' + (states[n]?.reason||'未验收 / Not accepted'))
   if (!names.length) console.log('  （还没有。用 `skills.mjs new "名字"` 自己写一个。）')
   process.exit(0)
 }
@@ -56,9 +60,15 @@ if (cmd === 'run') {
   try { execFileSync(process.execPath, ['--check', file], { stdio: 'pipe' }) }
   catch (e) { console.error('语法错了，先修：\n' + String(e.stderr || e.message).slice(0, 500)); process.exit(1) }
   try {
-    const out = execFileSync(process.execPath, [file, ...rest.slice(1)], { encoding: 'utf8', timeout: 120000 })
-    process.stdout.write(out)
-    process.exit(0)
+    const snap=async()=>{const r=await fetch('http://127.0.0.1:'+CONFIG.mc.commandPort+'/snapshot',{headers:{Authorization:'Bearer '+SECRETS.bodyToken},signal:AbortSignal.timeout(5000)});if(!r.ok)throw new Error('快照失败 / Snapshot failed');return r.json()}
+    const result=await withFileLock(path.join(P.mc,'skills-state.json'),async()=>{
+      let before,after,error,expect=null
+      try{expect=JSON.parse(fs.readFileSync(path.join(DIR,name+'.expect.json'),'utf8'))}catch(e){if(e.code!=='ENOENT')error='验收文件损坏 / Invalid acceptance file'}
+      try{before=await snap();const out=execFileSync(process.execPath,[file,...rest.slice(1)],{encoding:'utf8',timeout:120000,windowsHide:true});process.stdout.write(out);after=await snap();if(after.task?.state==='running')error='技能退出时任务还在运行 / Task still running after skill exit'}catch(e){error='技能运行失败 / Skill failed: '+String(e.stderr||e.message).slice(0,200)}
+      const result=error?{status:'failed',ok:false,reason:error}:evaluateSkill(expect,before,after)
+      const stateFile=path.join(P.mc,'skills-state.json'),state=await readJson(stateFile);state[name]={...result,at:new Date().toISOString()};await writeJson(stateFile,state);return result
+    },{timeoutMs:150000})
+    console.log(JSON.stringify(result));process.exit(result.ok?0:1)
   } catch (e) {
     console.error(String(e.stderr || e.stdout || e.message).slice(0, 800))
     process.exit(1)
@@ -92,6 +102,7 @@ console.log('我在', st.position)
 
 if (cmd === 'rm') {
   const name = rest[0]
+  if(!/^[a-z0-9-]+$/.test(name||''))throw new Error('技能名无效 / Invalid skill name')
   const file = path.join(DIR, name + '.mjs')
   if (!fs.existsSync(file)) { console.error('没有这个'); process.exit(2) }
   fs.renameSync(file, file + '.bak')
