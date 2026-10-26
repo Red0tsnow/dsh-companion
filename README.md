@@ -4,7 +4,7 @@
 
 > **这不是独立 App。** 它是 [DeepSeek Harness](https://github.com/deepseek-ai/dsh)（DSH）的**插件**——没有 DSH 就装不上、也跑不起来。它不是模型，不提供对话能力，用的是你自己 DSH 里已经配好的模型。
 
-当前版本 `0.7.0`，MIT 许可，源码与发行包都在本仓库。
+当前版本 `0.7.1`，MIT 许可，源码与发行包都在本仓库。
 
 ## 为什么用它
 
@@ -74,7 +74,7 @@
 - 只在 **Windows** 上验证过；macOS / Linux 未验证。
 - **全新 Windows 用户的第一次安装没有实测**（只在开发机上装过）。
 - QQ 和 B站都**没有跑通真实账号的完整往返**：扫码之后的操作只测到本地协议端点。
-- 0.7.0 在 0.6.1 基础上加了账号风险提示（补齐安装说明、通道需求、限制），功能代码未变；功能层面仍**没做真实世界和真实唤醒的回归**，0.5.2 的历史证据不代表本版本已验收。
+- 0.7.1 在 0.6.1 基础上加了账号风险提示（补齐安装说明、通道需求、限制），功能代码未变；功能层面仍**没做真实世界和真实唤醒的回归**，0.5.2 的历史证据不代表本版本已验收。
 
 **功能边界**
 
@@ -98,10 +98,10 @@
 
 **A. 用发行包（推荐）**
 
-从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.7.0.tgz`，在已安装 DSH 的终端里：
+从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.7.1.tgz`，在已安装 DSH 的终端里：
 
 ```powershell
-dsh plugin --profile desktop add ./dsh-companion-0.7.0.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.7.1.tgz
 ```
 
 **B. 从源码自己打包**
@@ -112,7 +112,7 @@ npm run build
 npm test
 npm run check
 npm pack
-dsh plugin --profile desktop add ./dsh-companion-0.7.0.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.7.1.tgz
 ```
 
 装完**重启该 DSH profile**。插件入口在 DSH 设置里的「鲸屋 / Whale House」。
@@ -141,7 +141,7 @@ dsh plugin --profile desktop add ./dsh-companion-0.7.0.tgz
 
 | 能力 / Capability | 使用方式与边界 / Use and limits |
 |---|---|
-| **会自己接着做**（可关） / Keep going independently (optional) | Minecraft 身体在线且空闲时接着做一小步，连续最多十次；默认关闭 / Online, idle world only; up to ten consecutive wakes; off by default |
+| **会自己接着做**（可关） / Keep going independently (optional) | Minecraft 身体在线且空闲时接着做一小步，连续最多十次；**世界里没有别人时不会唤醒**；默认关闭 / Online, idle world only; **never wakes while no other player is in the world**; up to ten consecutive wakes; off by default |
 | **会主动找你**（独立开关，一天一条） / Think of you (independent switch, once daily) | 随机窗口、40 字以内；普通角色私聊，允许安静跳过 / Random window, at most 40 characters in the ordinary private conversation; silence is allowed |
 | **会写自己的日记**（一天一段，必须新起日期） / A personal diary (one newly dated entry daily) | 工具自动添加日期和账本，连续三天没写会提示 / Tool-managed headings and ledger, with a notice after three empty days |
 
