@@ -12,11 +12,26 @@ test('every label quoted in the first-run guide exists in the UI', () => {
     '保存人设', '打开角色对话', '重新检查', '载入空白模板', '载入示例',
     '开始一起玩', '连接 QQ', '扫码连接 B站', '准备并开启世界',
     '她可以去的地方', '宿主模型', '陪伴日常', '没有，帮我准备一个',
+    // The in-panel chat is the only entry that actually talks to the persona.
+    '在这里聊一句', '发送',
   ];
   for (const label of labels) {
     assert.ok(guide.includes(label), 'the guide no longer mentions: ' + label);
     assert.ok(ui.includes(label), 'the guide quotes a label the UI does not have: ' + label);
   }
+});
+
+test('the guide does not promise that opening the conversation is enough', () => {
+  // Opening the DSH conversation lands the user in a workspace picker first, and the
+  // in-panel chat is what actually reaches the persona. The guide must say so.
+  assert.match(guide, /选一个工作空间/);
+  assert.match(guide, /那里面还不是她/);
+  assert.match(guide, /在这里聊一句/);
+});
+
+test('the guide tells the reader that DSH itself can do most of this', () => {
+  assert.match(guide, /可以交给 DSH 做/);
+  assert.match(guide, /帮我装这个插件/);
 });
 
 test('the first-run guide keeps its warnings and hard numbers', () => {
