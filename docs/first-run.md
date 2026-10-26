@@ -69,7 +69,7 @@ node -v
 4. 打开"命令提示符"，粘贴下面这行（**把路径换成你实际的位置**）：
 
 ```
-dsh plugin --profile desktop add "<你下载到的位置>\dsh-companion-0.6.5.tgz"
+dsh plugin --profile desktop add "<你下载到的位置>\dsh-companion-0.6.6.tgz"
 ```
 
 **路径怎么填**：在下载文件夹里右键那个文件 → 复制文件地址 → 粘进来（保留两边的引号）。

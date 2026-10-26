@@ -47,6 +47,29 @@ node companion.mjs mc places rm garden
 - **主动找你**：默认窗口从 10:00 开始，之后 13 小时内随机；修改为适合自己的时间，窗口不能跨天。随机延迟由提供方的 `cron + jitter_seconds` 计算，不另设随机定时器。落在普通 DSH 角色私聊，不作为世界事件，也不自动转发 QQ。 / Reach-out uses provider-owned cron plus jitter, in a same-day window. Replies stay in the ordinary DSH private conversation, not Minecraft or automatic QQ forwarding.
 - **写日记**：默认 21:00，可改时间。与睡前一句独立；内容保存在 `workspace/diary.md`，账本 `workspace/diary.jsonl`。 / Diary time is configurable and independent of bedtime lines.
 
+### 回头看自己 / Looking back at itself
+
+三个开关共用「启用回顾」一个总开关，和上面三项**独立**，同样需要 dsh-proactive。默认关闭。它们解决的是同一个问题：人设、长期记忆、规则都不会自己更新，必须有固定时机回头看。 / Three switches share one master toggle, independent of the three above. Same provider, off by default. They exist because a persona, its long-term memory and its rules never update on their own — something has to make room to look back.
+
+| 开关 | 节奏 | 做什么 | 记账 |
+|---|---|---|---|
+| **整理长期记忆** | 每月 N 号（默认 1 号 11:00） | 日记里 30 天前的段落压成三行写进长期记忆，原文进 `archive/` | `reflect mark memory "…"` |
+| **人设回顾** | 每周某天（默认周日 21:00） | 这周有没有哪句话让她觉得「我不是这样想的」；**想不清楚可以跳过** | `reflect mark persona "…"` 或 `--skip` |
+| **规则检查** | 每月 N 号（默认 15 号 21:00） | 规则有没有跟实际冲突、过时；**一个月最多改一条** | `reflect mark rules "原来…现在…为什么"` |
+
+日期限制在 **1–28**，避免二月没有 30 号导致整月跳过。人设回顾允许空着——为了完成配额去改人设，比不改更糟。 / Day numbers are capped at 28 so short months cannot skip a run. The persona review may be skipped: churning the persona to meet a quota is worse than leaving it alone.
+
+```text
+node companion.mjs reflect status            # 三件各自这个窗口做了没有
+node companion.mjs reflect status persona    # 只看一件
+node companion.mjs reflect gate memory       # 定时唤醒先查这个，allowed:false 就安静结束
+node companion.mjs reflect mark memory "整理了三段，留下了什么"
+node companion.mjs reflect mark persona --skip
+node companion.mjs reflect show              # 最近几条
+```
+
+**配额按窗口算，不是按天**：月度功能整个自然月只记一次，周度功能按周一为界。同一窗口内第二次 mark 退出码 3。账本 `workspace/reflect.jsonl`。 / Quotas are window-based, not daily: monthly features record once per calendar month, weekly ones reset on Monday. A second mark in the same window exits with code 3. Ledger: `workspace/reflect.jsonl`.
+
 日常工具：`reachout status|show`；`reachout mark "一句话"` 在回复前记账，`--skip` 安静跳过。同一天第二次 mark 退出码 3。40 字、禁用打卡问候由工具检查。`diary write --file <正文文本文件>` 自动新起 `## MM-DD`；正文 3–6 行，平淡一天允许一行实话。`diary skip` 记录今天不想写。文件与账本已有当天记录时拒绝再加一段，不用“补”接旧段落。 / Daily tools enforce one record per day, validate reach-out text and add new diary date headings. Duplicate operations exit with code 3. Skip is explicit and also counts as the day's decision.
 
 关闭开关会删除相应文件并取消本插件句柄；卸载也清理订阅，保留日记和其他角色数据。不会修改用户原有的其他闹钟。 / Disabling or unloading withdraws the plugin's schedule files and handles while retaining character data and unrelated alarms.
