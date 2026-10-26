@@ -2,7 +2,7 @@
 
 给 DSH 中的角色一个独立工作区：保存人设、日记和长期记忆，按需接入 Minecraft、QQ、B站与自备的小黑盒工具。只配置人设即可开始 DSH 对话，其余通道可以一直留空。
 
-首个验证平台为 Windows；需要 DSH 持续运行及宿主中可用的模型。当前版本为 `0.5.1`，支持版本选择和三种世界来源。先确认 DSH 自己能正常聊天（随便发一句，有回复就行）。插件用宿主已有的模型，不需要另外填 key。真实账号与全新系统验收见 [验证记录](docs/verification.md)。
+首个验证平台为 Windows；需要 DSH 持续运行及宿主中可用的模型。当前版本为 `0.5.2`，支持版本选择、三种世界来源和已验证版本的 Paper 皮肤操作。先确认 DSH 自己能正常聊天（随便发一句，有回复就行）。插件用宿主已有的模型，不需要另外填 key。版本边界见 [0.5.2 记录](docs/verification-0.5.2.md)。
 
 ## 安装
 
@@ -19,7 +19,7 @@ npm pack
 在已安装 DSH 的终端中安装生成的包，并重启该 DSH profile：
 
 ```powershell
-dsh plugin --profile desktop add ./dsh-companion-0.5.1.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.5.2.tgz
 ```
 
 开发时也可安装本地目录：`dsh plugin --profile desktop add "link:<插件源码绝对路径>"`。默认 profile 名为 `desktop`；使用其他 profile 时替换该名称。插件入口位于 DSH 设置中的“同居者 / Companion”。
@@ -36,7 +36,7 @@ dsh plugin --profile desktop add ./dsh-companion-0.5.1.tgz
 
 | 通道 | 用户需要准备 | 插件负责 |
 |---|---|---|
-| Minecraft | 选择新建世界、游戏内对局域网开放或已有服务端 | 动态选择支持版本，准备对应 Java（26.1 使用 Java 25），或直接连接已有世界；换版本保留旧世界。自定义皮肤尚待实机验收，暂未开放；旧 Paper 目录保留，支持回到独立原版世界 |
+| Minecraft | 选择新建世界、游戏内对局域网开放或已有服务端 | 动态选择支持版本，准备对应 Java（26.1 使用 Java 25）；换版本保留旧世界。Paper 皮肤目前仅支持已验证的 1.21.8，开启世界并让角色进入后可粘贴 PNG 直链应用；默认原版不受影响 |
 | QQ | 两个 QQ 号：你的，和角色用的那个 | 下载并校验官方便携版 NapCat、解压后直接运行（不执行安装器、不要管理员权限）、自动写入连接参数；扫码登录由你完成 |
 | B站 | 用希望角色使用的账号在 B站 App 扫码确认 | 获取登录二维码，在本地保存确认后的登录态，并提供自有工具链 |
 | 小黑盒 | 用户自行提供的 CLI 路径 | 调用 CLI、展示返回状态；不分发签名代码或内部签名常量 |
@@ -74,6 +74,6 @@ node tools/migrate.mjs --source "<旧DSH数据目录>" --target "<新角色数�
 
 Install the package into your DSH profile, restart DSH, and open **Settings → Companion**. Save a persona, then open the character conversation. All four external channels are optional. Windows is the first validation target; DSH and its configured model must stay available.
 
-The Minecraft guide offers a managed world with dynamic version selection, LAN discovery, or an existing server folder. Managed setup requires download and EULA confirmation. NapCat uses its pinned portable archive with explicit version/hash confirmation and an isolated process data path. The guide supports restarting the helper and scanning a fresh QR code. Paper skins remain unavailable pending client-visible acceptance. Bilibili supports app QR login. Heybox requires your own CLI; no signing implementation or internal constants are shipped. The plugin reuses the host model and needs no additional API key. Missing evidence is shown as unknown.
+The Minecraft guide offers a managed world with dynamic version selection, LAN discovery, or an existing server folder. Managed setup requires download and EULA confirmation. Paper skins are enabled only for the verified 1.21.8 build; apply a direct PNG URL while the managed world is running. NapCat uses its pinned portable archive with explicit version/hash confirmation and an isolated process data path. The guide supports restarting the helper and scanning a fresh QR code. Bilibili supports app QR login. Heybox requires your own CLI; no signing implementation or internal constants are shipped. The plugin reuses the host model and needs no additional API key. Missing evidence is shown as unknown.
 
 Run migration without `--apply` to preview it. It preserves source files and existing destination files. Back up the companion data directory before upgrading. Uninstalling the plugin leaves that data intact. See [usage](docs/usage.md), [migration](docs/migration.md), and [verification](docs/verification.md) for current details and limits.

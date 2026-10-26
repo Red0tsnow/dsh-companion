@@ -10,7 +10,8 @@ const pin = JSON.parse(await fs.readFile(new URL('../tools/known-good.json', imp
 
 test('known-good pins Paper and SkinsRestorer with complete hashes and official hosts', () => {
   assert.equal(pin.mode, 'portable');
-  assert.equal(pin.paper.releaseVerified,false,'Paper must stay gated until its full acceptance is recorded');
+  assert.equal(pin.paper.releaseVerified,true,'Client-visible evidence is required before enabling the reviewed Paper pin');
+  assert.equal(pin.skinsrestorer.releaseVerified,true);
   assert.match(pin.paper.sha256, /^[a-f0-9]{64}$/);
   assert.match(pin.paper.url, /^https:\/\/fill-data\.papermc\.io\//);
   assert.ok(Number(pin.paper.size) > 0);

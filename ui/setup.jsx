@@ -17,7 +17,7 @@ const copy={
     unsigned:'当前安装助手没有可验证的发布者签名，已关闭自动执行。请按手动说明安装。',execution:'我已核对显示的版本号与哈希，确认执行', 'manual-required':'自动安装已停止，请按手动说明继续。',
     consent:'允许从官方来源下载所需组件',eula:'我已阅读并同意 Minecraft 使用协议',prepare:'准备并开启世界',
     serverType:'服务端类型',vanilla:'原版（最快，无皮肤）',paper:'Paper（支持自定义皮肤）',
-    skin:'给她一张皮肤',skinUrl:'皮肤图片的 https 地址',skinApply:'应用皮肤',skinNote:'应用时会短暂启动一次服务端，约一分钟；请先关闭世界。',skinDone:'皮肤已应用',
+    skin:'为角色设置皮肤',skinUrl:'皮肤图片的 https 地址',skinApply:'应用皮肤',skinNote:'先开启世界并让角色进入，再填写 PNG 图片直链。无需关闭世界，收到成功回执后会更新。',skinDone:'皮肤已应用',paperVersions:'自定义皮肤目前支持的游戏版本：',
     qqTitle:'让角色来到 QQ',qqIntro:'为角色使用一个独立 QQ 账号。按这里提示的方式准备连接，并用手机扫码确认登录。',
     owner:'你的 QQ 号',self:'角色使用的 QQ 号',different:'请使用两个不同的 QQ 账号。私聊只接收你的账号；群聊可稍后设置。',
     qqPrepare:'下载连接助手',openHelper:'打开安装助手',helperInstall:'在打开的助手中完成安装，然后回到这里继续。',
@@ -50,7 +50,7 @@ const copy={
     unsigned:'This installer has no verified publisher signature. Automatic execution is disabled. Please use the manual guide.',execution:'I checked the displayed version and hash and confirm execution','manual-required':'Automatic installation stopped. Please follow the manual guide.',
     consent:'Allow required components to download from official sources',eula:'I have read and accept the Minecraft usage agreement',prepare:'Prepare and open world',
     serverType:'Server type',vanilla:'Vanilla (fastest, no skins)',paper:'Paper (supports custom skins)',
-    skin:'Give her a skin',skinUrl:'Skin image https URL',skinApply:'Apply skin',skinNote:'This briefly starts the server for about a minute. Close the world first.',skinDone:'Skin applied',
+    skin:'Set the character skin',skinUrl:'Skin image https URL',skinApply:'Apply skin',skinNote:'Open the world and let the character join, then paste a direct PNG URL. Keep the world open; success appears after the server confirms it.',skinDone:'Skin applied',paperVersions:'Game versions verified for custom skins:',
     qqTitle:'Bring your character to QQ',qqIntro:'Use a separate QQ account for the character. Follow the preparation steps here and confirm login on your phone.',
     owner:'Your QQ number',self:'Character QQ number',different:'Use two different accounts. Only your private messages are accepted; groups can be set up later.',
     qqPrepare:'Download connection helper',openHelper:'Open installer',helperInstall:'Finish installation in the helper window, then return here.',
@@ -75,13 +75,13 @@ export function SetupFlow({id,lang,request,onComplete,ownerId='',selfId='',onlin
   const [state,setState]=useState(null),[login,setLogin]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
   const [qqLogin,setQqLogin]=useState(null);
   const [source,setSource]=useState('managed'),[catalog,setCatalog]=useState(null),[version,setVersion]=useState(''),[serverOnly,setServerOnly]=useState(false),[directory,setDirectory]=useState(''),[javaPath,setJavaPath]=useState(''),[trust,setTrust]=useState(null),[execution,setExecution]=useState(false);
-  const [serverType,setServerType]=useState('vanilla');
+  const [serverType,setServerType]=useState('vanilla'),[skinUrl,setSkinUrl]=useState('');
   const completed=useRef(null),mounted=useRef(true),completeRef=useRef(onComplete);completeRef.current=onComplete;
   useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
   useEffect(()=>{if(!open){setOwner(ownerId);setSelf(selfId);}},[ownerId,selfId,open]);
-  useEffect(()=>{if(!open&&id==='mc'){setSource(world.source||'managed');setDirectory(world.serverDir||'');setJavaPath(world.javaPath||'');if(world.version)setVersion(world.version);}},[open,id,world.source,world.serverDir,world.javaPath,world.version]);
+  useEffect(()=>{if(!open&&id==='mc'){setSource(world.source||'managed');setDirectory(world.serverDir||'');setJavaPath(world.javaPath||'');setServerType(world.serverType||'vanilla');if(world.version)setVersion(world.version);}},[open,id,world.source,world.serverDir,world.javaPath,world.version,world.serverType]);
   const perform=async fn=>{setBusy(true);setError('');setNotice('');try{await fn();}catch(e){if(mounted.current)setError(friendly(e.message,lang));}finally{if(mounted.current)setBusy(false);}};
-  useEffect(()=>{if(!open||!['mc','qq'].includes(id)||(id==='mc'&&source!=='managed'))return;let active=true;request(id==='mc'?'/setup/mc/versions':'/setup/qq/trust').then(data=>{if(!active)return;if(id==='mc'){setCatalog(data);setVersion(v=>v||data.defaultVersion||'');}else setTrust(data);}).catch(e=>{if(active)setError(friendly(e.message,lang));});return()=>{active=false;};},[open,id,request,lang,source]);
+  useEffect(()=>{if(!open||!['mc','qq'].includes(id))return;let active=true;request(id==='mc'?'/setup/mc/versions':'/setup/qq/trust').then(data=>{if(!active)return;if(id==='mc'){setCatalog(data);setVersion(v=>v||data.defaultVersion||'');}else setTrust(data);}).catch(e=>{if(active)setError(friendly(e.message,lang));});return()=>{active=false;};},[open,id,request,lang,source]);
   useEffect(()=>{
     if(!open||!['mc','qq'].includes(id))return;
     let active=true;
@@ -105,11 +105,12 @@ export function SetupFlow({id,lang,request,onComplete,ownerId='',selfId='',onlin
       {id==='mc'&&<>
         <fieldset className="dsc-world-source" disabled={busy||state?.running}><legend>{t.mcIntro}</legend>{['managed','lan','existing'].map(item=><label className="dsc-check" key={item}><input type="radio" name="world-source" value={item} checked={source===item} onChange={()=>{setSource(item);setState(null);setError('');}}/>{t[item]}</label>)}</fieldset>
         {source==='managed'&&<>
-          <label className="field"><span>{t.version}</span><select aria-label={t.version} value={version} onChange={e=>{setVersion(e.target.value);setServerOnly(false);}} disabled={!catalog||busy||state?.running}>
+          <label className="field"><span>{t.version}</span><select aria-label={t.version} value={version} onChange={e=>{setVersion(e.target.value);setServerOnly(false);if(!catalog?.paper?.versions?.includes(e.target.value))setServerType('vanilla');}} disabled={!catalog||busy||state?.running}>
             {!catalog&&<option value="">{t.versionsLoading}</option>}{['supported','server-only','unavailable'].map(group=><optgroup key={group} label={t[group==='server-only'?'serverOnly':group]}>{catalog?.versions.filter(v=>v.state===group).map(v=><option key={v.id} value={v.id} disabled={group==='unavailable'}>{v.id}</option>)}</optgroup>)}
           </select></label><p className="dsc-note">{t.mcVersion}</p>
           <label className="field"><span>{t.serverType}</span><select aria-label={t.serverType} value={serverType} onChange={e=>setServerType(e.target.value)} disabled={busy||state?.running}><option value="vanilla">{t.vanilla}</option><option value="paper" disabled={catalog?.paper?.available!==true||!catalog.paper.versions.includes(version)}>{t.paper}</option></select></label>
           {catalog?.paper?.available!==true&&<p className="dsc-note">{t.paperPending}</p>}
+          {catalog?.paper?.available===true&&<p className="dsc-note">{t.paperVersions} {catalog.paper.versions.join(', ')}</p>}
           {catalog?.versions.find(v=>v.id===version)?.state==='server-only'&&<label className="dsc-check"><input type="checkbox" checked={serverOnly} onChange={e=>setServerOnly(e.target.checked)}/>{t.serverOnlyConfirm}</label>}
         </>}
         {source==='lan'&&<><p className="dsc-note">{t.lanHelp}</p><p className="dsc-warning">{t.modWarning}</p></>}
@@ -123,7 +124,8 @@ export function SetupFlow({id,lang,request,onComplete,ownerId='',selfId='',onlin
         </>}
         {state?.checks&&<ul className="dsc-checks">{state.checks.map((check,i)=><li key={i} data-ok={check.ok}>{check.ok?'✓':'✕'} {friendly(check.message,lang)}</li>)}</ul>}
         {['complete','server-only-ready'].includes(state?.phase)&&state.address&&<div className="dsc-join"><p>{t.address}</p><strong>{state.address}</strong><button className="small" onClick={()=>perform(async()=>{await navigator.clipboard.writeText(state.address);setNotice(t.copied);})}>{t.copy}</button></div>}
-        {(world.serverType==='paper'||(source==='managed'&&state?.phase==='error'))&&<><p className="dsc-note">{t.paperPending}</p><button disabled={busy||state?.running||!consent||!eula||!version} onClick={()=>perform(async()=>{setServerType('vanilla');setState(await request('/setup/mc',{source:'managed',version,serverType:'vanilla',downloadConsent:consent,eulaAccepted:eula,acknowledgeServerOnly:serverOnly}));})}>{t.vanillaFallback}</button></>}
+        {world.serverType==='paper'&&catalog?.paper?.available===true&&catalog.paper.versions.includes(world.version)&&<div className="dsc-runtime"><h4>{t.skin}</h4><p className="dsc-note">{t.skinNote}</p><label className="field"><span>{t.skinUrl}</span><input type="url" value={skinUrl} onChange={e=>setSkinUrl(e.target.value)} placeholder="https://…/skin.png" disabled={busy||state?.running}/></label><div className="dsc-toolbar"><button disabled={busy||state?.running||!skinUrl.trim()} onClick={()=>perform(async()=>{const result=await request('/setup/skin',{url:skinUrl});if(result.ok!==true)throw new Error(result.error||t.error);setNotice(t.skinDone);})}>{t.skinApply}</button></div></div>}
+        {((world.serverType==='paper'&&catalog?.paper?.available!==true)||(source==='managed'&&state?.phase==='error'))&&<><p className="dsc-note">{catalog?.paper?.available!==true?t.paperPending:t.mcVersion}</p><button disabled={busy||state?.running||!consent||!eula||!version} onClick={()=>perform(async()=>{setServerType('vanilla');setState(await request('/setup/mc',{source:'managed',version,serverType:'vanilla',downloadConsent:consent,eulaAccepted:eula,acknowledgeServerOnly:serverOnly}));})}>{t.vanillaFallback}</button></>}
       </>}
       {id==='qq'&&<>
         {trust&&<p className="dsc-trust">{t.trust}<br/><strong>{trust.version} · {trust.hashPrefix}</strong></p>}

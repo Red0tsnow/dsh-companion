@@ -1,6 +1,6 @@
 {
   "name": "dsh-companion",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A persistent character workspace with independent Minecraft, QQ, Heybox and Bilibili channels for DSH.",
   "type": "module",
   "main": "lib/index.js",
