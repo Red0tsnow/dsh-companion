@@ -1,7 +1,7 @@
 export const messages = {
   zh: {
     hostModel:'宿主模型',model_available:'可用',model_unconfigured:'未配置',model_unknown:'未知',modelCheck:'重新检查',modelHelp:'先确认 DSH 自己能正常聊天（随便发一句，有回复就行）。插件用宿主已有的模型，不需要另外填 key。',leave:'退出世界',enter:'进入世界',
-    title: '同居者', subtitle: '一个角色，慢慢过自己的日子。', first: '先认识彼此', firstHint: '写好人设，就能开始对话。其他通道可以以后再接。',
+    title: '鲸屋', subtitle: '', first: '先认识彼此', firstHint: '写好人设，就能开始对话。其他通道可以以后再接。',
     persona: '人设', personaHint: '每轮对话都会读取；写她是谁、怎么说话、你们是什么关系。', name: '角色名字', relationship: '你们的关系', tone: '说话语气', owner: '她怎么称呼你', ownerId: '你的 QQ 号',
     fullPersona: '完整人设', savePersona: '保存人设', saved: '已保存', save: '保存配置', saving: '保存中…', template: '载入空白模板', example: '载入示例', generate: '根据上面的信息生成骨架', open: '打开角色对话', chat: '在这里聊一句', send: '发送', input: '想说的话', nativeHint: '对话保存在 DSH 的角色会话里。', previewHint: '当前为独立面板预览；角色对话需在 DSH 中打开。',
     channels: '她可以去的地方', channelsHint: '选择想一起做的事，跟着向导连接。也可以以后再来。', advanced:'高级设置', test: '测试连接', testing: '检测中…', enable: '启用此通道', enabled: '已启用', channelSaved: '通道配置已保存', lastCheck: '最后检测', lastSuccess: '最后成功', never: '尚未检测',
@@ -20,7 +20,7 @@ export const messages = {
   },
   en: {
     hostModel:'Host model',model_available:'Available',model_unconfigured:'Not configured',model_unknown:'Unknown',modelCheck:'Check again',modelHelp:'First send a message in DSH and confirm it replies. This plugin uses the existing host model; no additional key is needed.',leave:'Leave world',enter:'Enter world',
-    title: 'Companion', subtitle: 'One character, a life that carries on.', first: 'Get to know each other', firstHint: 'Save a persona to start talking. Add the other channels whenever you are ready.',
+    title: 'Whale House', subtitle: '', first: 'Get to know each other', firstHint: 'Save a persona to start talking. Add the other channels whenever you are ready.',
     persona: 'Persona', personaHint: 'Read on every turn: who they are, how they speak, and your relationship.', name: 'Character name', relationship: 'Your relationship', tone: 'Voice and tone', owner: 'What they call you', ownerId: 'Your QQ number',
     fullPersona: 'Full persona', savePersona: 'Save persona', saved: 'Saved', save: 'Save settings', saving: 'Saving…', template: 'Load blank template', example: 'Load example', generate: 'Create a draft from these details', open: 'Open character conversation', chat: 'Say something here', send: 'Send', input: 'Your message', nativeHint: 'The conversation lives in the character’s DSH session.', previewHint: 'This is the standalone panel preview. Open it in DSH to talk to the character.',
     channels: 'Places they can be', channelsHint: 'Choose what to do together and follow the connection guide. You can also come back later.', advanced:'Advanced settings', test: 'Test connection', testing: 'Checking…', enable: 'Enable this channel', enabled: 'Enabled', channelSaved: 'Channel settings saved', lastCheck: 'Last checked', lastSuccess: 'Last successful', never: 'Not checked yet',

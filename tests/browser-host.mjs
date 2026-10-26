@@ -21,7 +21,7 @@ try {
   await page.waitForLoadState('networkidle',{timeout:5000}).catch(()=>{});
   const continueButton=page.getByRole('button',{name:'继续',exact:true});if(await continueButton.count())await continueButton.click();
   await page.getByRole('button',{name:'账号菜单',exact:true}).click();await page.getByText('设置',{exact:true}).click();
-  await page.getByText('同居者 / Companion',{exact:true}).click();
+  await page.getByText('鲸屋 / Whale House',{exact:true}).click();
   const panel=page.locator('.dsc');await expect(panel).toBeVisible();await expect(panel.getByLabel('完整人设',{exact:true})).not.toHaveValue('');
   report.checks.push({name:'real DSH settings section renders',pass:true});
   await page.screenshot({path:path.join(artifact,'host-panel-settings.png'),fullPage:true});

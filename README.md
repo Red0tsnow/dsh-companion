@@ -1,10 +1,10 @@
-# dsh-companion · 同居者
+# dsh-companion · 鲸屋
 
 给 DSH 中的角色一个独立工作区：保存人设、日记和长期记忆，按需接入 Minecraft、QQ、B站与自备的小黑盒工具。只配置人设即可开始 DSH 对话，其余通道可以一直留空。
 
 > **这不是独立 App。** 它是 [DeepSeek Harness](https://github.com/deepseek-ai/dsh)（DSH）的**插件**——没有 DSH 就装不上、也跑不起来。它不是模型，不提供对话能力，用的是你自己 DSH 里已经配好的模型。
 
-当前版本 `0.6.6`，MIT 许可，源码与发行包都在本仓库。
+当前版本 `0.7.0`，MIT 许可，源码与发行包都在本仓库。
 
 ## 为什么用它
 
@@ -74,7 +74,7 @@
 - 只在 **Windows** 上验证过；macOS / Linux 未验证。
 - **全新 Windows 用户的第一次安装没有实测**（只在开发机上装过）。
 - QQ 和 B站都**没有跑通真实账号的完整往返**：扫码之后的操作只测到本地协议端点。
-- 0.6.6 在 0.6.1 基础上加了账号风险提示（补齐安装说明、通道需求、限制），功能代码未变；功能层面仍**没做真实世界和真实唤醒的回归**，0.5.2 的历史证据不代表本版本已验收。
+- 0.7.0 在 0.6.1 基础上加了账号风险提示（补齐安装说明、通道需求、限制），功能代码未变；功能层面仍**没做真实世界和真实唤醒的回归**，0.5.2 的历史证据不代表本版本已验收。
 
 **功能边界**
 
@@ -98,10 +98,10 @@
 
 **A. 用发行包（推荐）**
 
-从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.6.6.tgz`，在已安装 DSH 的终端里：
+从 [Releases](https://github.com/Red0tsnow/dsh-companion/releases) 下载 `dsh-companion-0.7.0.tgz`，在已安装 DSH 的终端里：
 
 ```powershell
-dsh plugin --profile desktop add ./dsh-companion-0.6.6.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.7.0.tgz
 ```
 
 **B. 从源码自己打包**
@@ -112,10 +112,10 @@ npm run build
 npm test
 npm run check
 npm pack
-dsh plugin --profile desktop add ./dsh-companion-0.6.6.tgz
+dsh plugin --profile desktop add ./dsh-companion-0.7.0.tgz
 ```
 
-装完**重启该 DSH profile**。插件入口在 DSH 设置里的「同居者 / Companion」。
+装完**重启该 DSH profile**。插件入口在 DSH 设置里的「鲸屋 / Whale House」。
 
 默认 profile 名是 `desktop`，用别的 profile 就替换掉。开发时也可以直接链源码目录：`dsh plugin --profile desktop add "link:<插件绝对路径>"`。
 
@@ -174,7 +174,7 @@ node tools/migrate.mjs --source "<旧DSH数据目录>" --target "<新角色数�
 
 ## English quick start
 
-Install the package into your DSH profile, restart DSH, and open **Settings → Companion**. Save a persona, then open the character conversation. All four external channels are optional. Windows is the first validation target; DSH and its configured model must stay available.
+Install the package into your DSH profile, restart DSH, and open **Settings → Whale House**. Save a persona, then open the character conversation. All four external channels are optional. Windows is the first validation target; DSH and its configured model must stay available.
 
 The Minecraft guide offers a managed world with dynamic version selection, LAN discovery, or an existing server folder. Managed setup requires download and EULA confirmation. Paper skins are enabled only for the verified 1.21.8 build; apply a direct PNG URL while the managed world is running. NapCat uses its pinned portable archive with explicit version/hash confirmation and an isolated process data path. The guide supports restarting the helper and scanning a fresh QR code. Bilibili supports app QR login. Heybox requires your own CLI; no signing implementation or internal constants are shipped. The plugin reuses the host model and needs no additional API key. Missing evidence is shown as unknown.
 

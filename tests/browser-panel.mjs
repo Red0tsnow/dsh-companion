@@ -21,7 +21,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 1260, height: 980 } });
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base);await page.waitForLoadState('networkidle');
-  await expect(page.getByRole('heading',{name:'同居者',exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'鲸屋',exact:true})).toBeVisible();
   assert.equal(await page.locator('.dsc-status[data-state=unconfigured]').count(),4);
   await expect(page.locator('input[name="mc.serverDir"]')).not.toBeVisible();
   await expect(page.locator('input[name="qq.wsUrl"]')).not.toBeVisible();
